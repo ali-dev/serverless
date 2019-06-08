@@ -1,0 +1,18 @@
+{
+  "name": "cause-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "api/cause.js",
+  "dependencies": {
+    "bluebird": "^3.5.5",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "aws-cli": "0.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ali Abu El Haj",
+  "license": "ISC"
+}
