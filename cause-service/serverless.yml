@@ -77,6 +77,8 @@ functions:
       - http: 
           path: cause
           method: get
+          cors:
+            origin: '*'
   createCause:
     handler: api/cause.create
     stage: dev

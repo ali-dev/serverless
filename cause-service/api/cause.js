@@ -11,7 +11,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 module.exports.list = (event, context, callback) => {
   var params = {
         TableName: process.env.CAUSE_TABLE,
-        ProjectionExpression: "id, causeName, details, country"
+        ProjectionExpression: "id, causeName, details, country, image"
     };
 
     console.log("Scanning Causes table.");
@@ -24,9 +24,11 @@ module.exports.list = (event, context, callback) => {
             console.log(JSON.stringify(data));
             return callback(null, {
                 statusCode: 200,
-                body: JSON.stringify({
-                    causes: data.Items
-                })
+                headers: {
+                  "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+                  "Access-Control-Allow-Credentials" : true // Required for cookies, authorization headers with HTTPS
+                },
+                body: JSON.stringify(data.Items)
             });
         }
 
