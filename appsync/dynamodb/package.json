@@ -1,0 +1,42 @@
+{
+  "name": "dynamodb-service",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "serverless dynamodb install && serverless --profile personal  offline start",
+    "deploy-prod": "yarn dynamodb-generate-seed-data && serverless --profile personal --stage=production deploy",
+    "deploy-appsync": "serverless --profile personal deploy-appsync",
+    "update-appsync": "serverless --profile personal update-appsync",
+    "delete-appsync": "serverless --profile personal delete-appsync"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.533.0",
+    "babel-polyfill": "^6.26.0",
+    "bluebird": "^3.5.5",
+    "serverless-appsync-plugin": "^1.1.2",
+    "serverless-dynamodb-fixtures": "0.0.4"
+  },
+  "devDependencies": {
+    "aws-appsync": "^2.0.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "body-parser": "^1.15.2",
+    "cors": "2.8.4",
+    "env-cmd": "^5.0.0",
+    "faker": "^4.1.0",
+    "imports-loader": "^0.7.1",
+    "jest": "^21.2.1",
+    "jsonfile": "^4.0.0",
+    "serverless-appsync-offline": "^1.1.2",
+    "serverless-dynamodb-client": "0.0.2",
+    "serverless-dynamodb-local": "^0.2.35",
+    "serverless-offline": "^4.5.1",
+    "serverless-webpack": "^4.1.0",
+    "webpack": "^3.8.1",
+    "webpack-node-externals": "^1.6.0"
+  }
+}
