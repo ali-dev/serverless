@@ -1,0 +1,562 @@
+{
+  "service": {
+    "service": "dynamodb",
+    "serviceObject": {
+      "name": "dynamodb"
+    },
+    "provider": {
+      "stage": "dev",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)*]+?)}",
+      "name": "aws",
+      "runtime": "nodejs10.x",
+      "profile": "personal",
+      "region": "us-east-1",
+      "environment": {
+        "ORGANIZATION_TABLE": "dev-organization",
+        "CAUSE_TABLE": "dev-cause"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:Query",
+            "dynamodb:Scan",
+            "dynamodb:GetItem",
+            "dynamodb:PutItem"
+          ],
+          "Resource": "*"
+        }
+      ],
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "CognitoUserPoolUsers": {
+            "Type": "AWS::Cognito::UserPool",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "UserPoolName": "DineUserPool",
+              "AutoVerifiedAttributes": [
+                "email"
+              ],
+              "Policies": {
+                "PasswordPolicy": {
+                  "MinimumLength": 8,
+                  "RequireLowercase": true,
+                  "RequireNumbers": true,
+                  "RequireSymbols": false,
+                  "RequireUppercase": true
+                }
+              },
+              "UsernameAttributes": [
+                "email"
+              ]
+            }
+          },
+          "WebUserPoolClient": {
+            "Type": "AWS::Cognito::UserPoolClient",
+            "Properties": {
+              "ClientName": "Web",
+              "GenerateSecret": false,
+              "RefreshTokenValidity": 30,
+              "UserPoolId": {
+                "Ref": "CognitoUserPoolUsers"
+              }
+            }
+          },
+          "OrganizationTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "TableName": "dev-organization",
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              }
+            }
+          },
+          "CauseTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "organizationId",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "organizationId",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "TableName": "dev-cause",
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              }
+            }
+          },
+          "GraphQlApi": {
+            "Type": "AWS::AppSync::GraphQLApi",
+            "Properties": {
+              "Name": "dynamodbDemo",
+              "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "AdditionalAuthenticationProviders": [],
+              "UserPoolConfig": {
+                "AwsRegion": "us-east-1",
+                "UserPoolId": {
+                  "Ref": "CognitoUserPoolUsers"
+                },
+                "DefaultAction": "ALLOW"
+              }
+            }
+          },
+          "GraphQlSchema": {
+            "Type": "AWS::AppSync::GraphQLSchema",
+            "Properties": {
+              "Definition": "\n\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\n\t# search functionality is available in elasticsearch integration\n\t# searchAllTweetsByKeyword(keyword: String!): TweetConnection\n}\n\n\ntype Organization {\n\tid: String!\n\tname: String!\n}\n\ntype Cause {\n\tcauseName: String!\n    details: String!\n    image: String!\n    country: String!\n}\n\nschema {\n\tquery: Query\n\t# mutation: Mutation\n\t# subscription: Subscription\n}\n",
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              }
+            }
+          },
+          "GraphQlDsOrganizationsRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "appsync.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": "GraphQlDsOrganizationsPolicy",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query",
+                          "dynamodb:UpdateItem"
+                        ],
+                        "Resource": [
+                          "arn:aws:dynamodb:us-east-1:*:table/dev-organization",
+                          "arn:aws:dynamodb:us-east-1:*:table/dev-organization/*"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "GraphQlDsCausesRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "appsync.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": "GraphQlDsCausesPolicy",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query",
+                          "dynamodb:UpdateItem",
+                          "dynamodb:PutItem",
+                          "dynamodb:DeleteItem"
+                        ],
+                        "Resource": [
+                          "arn:aws:dynamodb:us-east-1:*:table/dev-cause",
+                          "arn:aws:dynamodb:us-east-1:*:table/dev-cause/*"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "GraphQlDsOrganizations": {
+            "Type": "AWS::AppSync::DataSource",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "Name": "Organizations",
+              "Description": "Organiations table",
+              "Type": "AMAZON_DYNAMODB",
+              "ServiceRoleArn": {
+                "Fn::GetAtt": [
+                  "GraphQlDsOrganizationsRole",
+                  "Arn"
+                ]
+              },
+              "DynamoDBConfig": {
+                "AwsRegion": "us-east-1",
+                "TableName": "dev-organization",
+                "UseCallerCredentials": false
+              }
+            }
+          },
+          "GraphQlDsCauses": {
+            "Type": "AWS::AppSync::DataSource",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "Name": "Causes",
+              "Description": "Causes table",
+              "Type": "AMAZON_DYNAMODB",
+              "ServiceRoleArn": {
+                "Fn::GetAtt": [
+                  "GraphQlDsCausesRole",
+                  "Arn"
+                ]
+              },
+              "DynamoDBConfig": {
+                "AwsRegion": "us-east-1",
+                "TableName": "dev-cause",
+                "UseCallerCredentials": false
+              }
+            }
+          },
+          "GraphQlResolverOrganizationname": {
+            "Type": "AWS::AppSync::Resolver",
+            "DependsOn": "GraphQlSchema",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "TypeName": "Organization",
+              "FieldName": "name",
+              "RequestMappingTemplate": "{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Query\",\n    \"query\" : {\n        \"expression\": \"handle = :handle\",\n        \"expressionValues\" : {\n            \":handle\" : {\n                \"S\" : \"${context.arguments.handle}\"\n            }\n        }\n    }\n}",
+              "ResponseMappingTemplate": "$util.toJson($context.result.items[0])",
+              "DataSourceName": {
+                "Fn::GetAtt": [
+                  "GraphQlDsOrganizations",
+                  "Name"
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "GraphQlApiUrl": {
+            "Value": {
+              "Fn::GetAtt": [
+                "GraphQlApi",
+                "GraphQLUrl"
+              ]
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      }
+    },
+    "custom": {
+      "stage": "dev",
+      "tableThroughputs": {
+        "prod": 5,
+        "default": 1
+      },
+      "tableThroughput": 1,
+      "appsync-offline": {
+        "port": 62222,
+        "dynamodb": {
+          "client": {
+            "endpoint": "http://localhost:8000",
+            "region": "localhost"
+          }
+        }
+      },
+      "dynamodb": {
+        "start": {
+          "port": 8000,
+          "inMemory": true,
+          "migrate": true,
+          "seed": true
+        }
+      },
+      "fixtures": [
+        {
+          "table": "dev-organization",
+          "enable": true,
+          "sources": [
+            "./dev-organizations.yml"
+          ]
+        },
+        {
+          "table": "dev-cause",
+          "enable": true,
+          "autogeneratedId": "id",
+          "sources": [
+            "./dev-causes.yml"
+          ]
+        }
+      ],
+      "appSync": {
+        "name": "dynamodbDemo",
+        "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+        "userPoolConfig": {
+          "awsRegion": "us-east-1",
+          "defaultAction": "ALLOW",
+          "userPoolId": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GraphQlApi\"][\"Properties\"][\"UserPoolConfig\"][\"UserPoolId\"]"
+          }
+        },
+        "mappingTemplates": [
+          {
+            "dataSource": "Organizations",
+            "type": "Organization",
+            "field": "name",
+            "request": "getOrganizationInfo-request-mapping-template.txt",
+            "response": "getOrganizationInfo-response-mapping-template.txt"
+          }
+        ],
+        "schema": null,
+        "dataSources": [
+          {
+            "type": "AMAZON_DYNAMODB",
+            "name": "Organizations",
+            "description": "Organiations table",
+            "config": {
+              "tableName": "dev-organization",
+              "iamRoleStatements": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GraphQlDsOrganizationsRole\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"]"
+              }
+            }
+          },
+          {
+            "type": "AMAZON_DYNAMODB",
+            "name": "Causes",
+            "description": "Causes table",
+            "config": {
+              "tableName": "dev-cause",
+              "iamRoleStatements": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GraphQlDsCausesRole\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "plugins": [
+      "serverless-appsync-plugin",
+      "serverless-dynamodb-local",
+      "serverless-appsync-offline",
+      "serverless-offline",
+      "serverless-dynamodb-fixtures"
+    ],
+    "pluginsData": {},
+    "functions": {},
+    "resources": {
+      "Resources": {
+        "CognitoUserPoolUsers": {
+          "Type": "AWS::Cognito::UserPool",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "UserPoolName": "DineUserPool",
+            "AutoVerifiedAttributes": [
+              "email"
+            ],
+            "Policies": {
+              "PasswordPolicy": {
+                "MinimumLength": 8,
+                "RequireLowercase": true,
+                "RequireNumbers": true,
+                "RequireSymbols": false,
+                "RequireUppercase": true
+              }
+            },
+            "UsernameAttributes": [
+              "email"
+            ]
+          }
+        },
+        "WebUserPoolClient": {
+          "Type": "AWS::Cognito::UserPoolClient",
+          "Properties": {
+            "ClientName": "Web",
+            "GenerateSecret": false,
+            "RefreshTokenValidity": 30,
+            "UserPoolId": {
+              "Ref": "CognitoUserPoolUsers"
+            }
+          }
+        },
+        "OrganizationTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "id",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "id",
+                "KeyType": "HASH"
+              }
+            ],
+            "TableName": "dev-organization",
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            }
+          }
+        },
+        "CauseTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "id",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "organizationId",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "id",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "organizationId",
+                "KeyType": "RANGE"
+              }
+            ],
+            "TableName": "dev-cause",
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            }
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "serviceFilename": "serverless.yml",
+    "layers": {}
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/dynamodb/dev/1569047154407-2019-09-21T06:25:54.407Z",
+    "artifact": ""
+  }
+}

@@ -1,0 +1,28 @@
+
+
+
+type Query {
+	getOrganizationInfo(name: String!): Organization!
+
+	# search functionality is available in elasticsearch integration
+	# searchAllTweetsByKeyword(keyword: String!): TweetConnection
+}
+
+
+type Organization {
+	id: String!
+	name: String!
+}
+
+type Cause {
+	causeName: String!
+    details: String!
+    image: String!
+    country: String!
+}
+
+schema {
+	query: Query
+	# mutation: Mutation
+	# subscription: Subscription
+}
