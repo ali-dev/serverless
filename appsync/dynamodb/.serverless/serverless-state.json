@@ -233,6 +233,7 @@
                         "Action": [
                           "dynamodb:Query",
                           "dynamodb:UpdateItem",
+                          "dynamodb:GetItem",
                           "dynamodb:PutItem",
                           "dynamodb:DeleteItem"
                         ],
@@ -556,7 +557,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1569047154407-2019-09-21T06:25:54.407Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1569648587433-2019-09-28T05:29:47.433Z",
     "artifact": ""
   }
 }

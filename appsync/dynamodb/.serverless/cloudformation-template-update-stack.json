@@ -202,6 +202,7 @@
                   "Action": [
                     "dynamodb:Query",
                     "dynamodb:UpdateItem",
+                    "dynamodb:GetItem",
                     "dynamodb:PutItem",
                     "dynamodb:DeleteItem"
                   ],

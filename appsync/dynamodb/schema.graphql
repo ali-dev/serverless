@@ -1,12 +1,7 @@
 
 
 
-type Query {
-	getOrganizationInfo(name: String!): Organization!
 
-	# search functionality is available in elasticsearch integration
-	# searchAllTweetsByKeyword(keyword: String!): TweetConnection
-}
 
 
 type Organization {
@@ -17,9 +12,20 @@ type Organization {
 type Cause {
 	causeName: String!
     details: String!
-    image: String!
+    image: String
     country: String!
 }
+
+type Causes {
+	causes: [Cause!]!
+}
+
+
+type Query {
+	getOrganizationInfo(name: String!): Organization!
+	getCauseInfo(id: String!, organizationId: String!): Cause
+}
+
 
 schema {
 	query: Query
