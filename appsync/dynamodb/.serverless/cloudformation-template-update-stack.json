@@ -107,15 +107,21 @@
       "Type": "AWS::AppSync::GraphQLApi",
       "Properties": {
         "Name": "dynamodbDemo",
-        "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
-        "AdditionalAuthenticationProviders": [],
-        "UserPoolConfig": {
-          "AwsRegion": "us-east-1",
-          "UserPoolId": {
-            "Ref": "CognitoUserPoolUsers"
-          },
-          "DefaultAction": "ALLOW"
-        }
+        "AuthenticationType": "API_KEY",
+        "AdditionalAuthenticationProviders": []
+      }
+    },
+    "GraphQlApiKeyDefault": {
+      "Type": "AWS::AppSync::ApiKey",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
+        "Expires": 1602791008
       }
     },
     "GraphQlSchema": {
@@ -323,6 +329,14 @@
         "Fn::GetAtt": [
           "GraphQlApi",
           "GraphQLUrl"
+        ]
+      }
+    },
+    "GraphQlApiKeyDefault": {
+      "Value": {
+        "Fn::GetAtt": [
+          "GraphQlApiKeyDefault",
+          "ApiKey"
         ]
       }
     }

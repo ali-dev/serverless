@@ -138,15 +138,21 @@
             "Type": "AWS::AppSync::GraphQLApi",
             "Properties": {
               "Name": "dynamodbDemo",
-              "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
-              "AdditionalAuthenticationProviders": [],
-              "UserPoolConfig": {
-                "AwsRegion": "us-east-1",
-                "UserPoolId": {
-                  "Ref": "CognitoUserPoolUsers"
-                },
-                "DefaultAction": "ALLOW"
-              }
+              "AuthenticationType": "API_KEY",
+              "AdditionalAuthenticationProviders": []
+            }
+          },
+          "GraphQlApiKeyDefault": {
+            "Type": "AWS::AppSync::ApiKey",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
+              "Expires": 1602791008
             }
           },
           "GraphQlSchema": {
@@ -356,6 +362,14 @@
                 "GraphQLUrl"
               ]
             }
+          },
+          "GraphQlApiKeyDefault": {
+            "Value": {
+              "Fn::GetAtt": [
+                "GraphQlApiKeyDefault",
+                "ApiKey"
+              ]
+            }
           }
         }
       },
@@ -430,14 +444,7 @@
       ],
       "appSync": {
         "name": "dynamodbDemo",
-        "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-        "userPoolConfig": {
-          "awsRegion": "us-east-1",
-          "defaultAction": "ALLOW",
-          "userPoolId": {
-            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GraphQlApi\"][\"Properties\"][\"UserPoolConfig\"][\"UserPoolId\"]"
-          }
-        },
+        "authenticationType": "API_KEY",
         "mappingTemplates": [
           {
             "dataSource": "Organizations",
@@ -586,7 +593,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1571254268534-2019-10-16T19:31:08.534Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1571255008198-2019-10-16T19:43:28.198Z",
     "artifact": ""
   }
 }

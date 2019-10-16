@@ -57,11 +57,11 @@ custom:
 
   appSync:
     name: dynamodbDemo # defaults to api
-    authenticationType: AMAZON_COGNITO_USER_POOLS # API_KEY is also supported
-    userPoolConfig:
-      awsRegion: us-east-1 # required # region
-      defaultAction: ALLOW
-      userPoolId: {Ref: CognitoUserPoolUsers}
+    authenticationType: API_KEY # AMAZON_COGNITO_USER_POOLS is also supported
+    # userPoolConfig: @todo look into adding userPool config for authenticated users?
+    #   awsRegion: us-east-1 # required # region
+    #   defaultAction: ALLOW
+    #   userPoolId: {Ref: CognitoUserPoolUsers}
     # region: # defaults to provider region
     # mappingTemplatesLocation: # defaults to mapping-templates
     mappingTemplates:
