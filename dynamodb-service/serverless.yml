@@ -53,6 +53,8 @@ provider:
   environment:
     ORGANIZATION_TABLE: "${self:custom.stage}-organization"
     CAUSE_TABLE: "${self:custom.stage}-cause"
+    EVENT_TABLE: "${self:custom.stage}-event"
+    
 
   iamRoleStatements:
     - Effect: Allow
@@ -65,21 +67,26 @@ provider:
 
 
 
- appSync:
-    name: dynamodbDemo # defaults to api
-    authenticationType: AMAZON_COGNITO_USER_POOLS # API_KEY is also supported
-    userPoolConfig:
-      awsRegion: us-east-1 # required # region
-      defaultAction: ALLOW
-      userPoolId: {Ref: CognitoUserPoolUsers}
+  # appSync:
+  #   name: dynamodbDemo # defaults to api
+  #   authenticationType: AMAZON_COGNITO_USER_POOLS # API_KEY is also supported
+  #   userPoolConfig:
+  #     awsRegion: us-east-1 # required # region
+  #     defaultAction: ALLOW
+  #     userPoolId: {Ref: CognitoUserPoolUsers}
     # region: # defaults to provider region
     # mappingTemplatesLocation: # defaults to mapping-templates
-    mappingTemplates:
-      - dataSource: Organizations
-        type: Organization
-        field: getOrganizationInfo
-        request: "getOrganizationInfo-request-mapping-template.txt"
-        response: "getOrganizationInfo-response-mapping-template.txt"
+    # mappingTemplates:
+    #   - dataSource: Organizations
+    #     type: Query
+    #     field: getOrganizationInfo
+    #     request: "getOrganizationInfo-request-mapping-template.txt"
+    #     response: "getOrganizationInfo-response-mapping-template.txt"
+    #   - dataSource: Causes
+    #     type: Query
+    #     field: getCauseInfo
+    #     request: "getCauseInfo-request-mapping-template.txt"
+    #     response: "getCauseInfo-response-mapping-template.txt"  
       # - dataSource: Organizations
       #   type: Organization
       #   field: meInfo
@@ -151,7 +158,21 @@ provider:
               Resource:
                 - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-cause"
                 - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-cause/*"
-
+      - type: AMAZON_DYNAMODB
+        name: Events
+        description: 'Events table'
+        config:
+          tableName: "${self:custom.stage}-cause"
+          iamRoleStatements: # custom IAM Role statements for this DataSource. Ignored if `serviceRoleArn` is present. Auto-generated if both `serviceRoleArn` and `iamRoleStatements` are omitted
+            - Effect: "Allow"
+              Action:
+                - "dynamodb:Query"
+                - "dynamodb:UpdateItem"
+                - "dynamodb:PutItem"
+                - "dynamodb:DeleteItem"
+              Resource:
+                - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-cause"
+                - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-cause/*"
 
 resources:
   Resources:
@@ -195,7 +216,23 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: ${self:custom.tableThroughput}
           WriteCapacityUnits: ${self:custom.tableThroughput}
-    
+    EventTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: "id"
+            AttributeType: "S"  
+        KeySchema:
+          -
+            AttributeName: "id"
+            KeyType: "HASH"
+        TableName: ${self:provider.environment.EVENT_TABLE}
+        # Set the capacity based on the stage
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${self:custom.tableThroughput}
+          WriteCapacityUnits: ${self:custom.tableThroughput}
 
 
 

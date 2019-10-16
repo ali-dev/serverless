@@ -1,34 +1,28 @@
+type Cause {
+	id: String!
+	causeName: String!
+	organizationId: String!
+	organizationName: String!
+	details: String!
+	image: String
+	country: String!
+}
 
-
-
-
-
+type Causes {
+	causes: [Cause!]
+}
 
 type Organization {
 	id: String!
 	name: String!
 }
 
-type Cause {
-	causeName: String!
-    details: String!
-    image: String
-    country: String!
-}
-
-type Causes {
-	causes: [Cause!]!
-}
-
-
 type Query {
 	getOrganizationInfo(name: String!): Organization!
 	getCauseInfo(id: String!, organizationId: String!): Cause
+	getAllCauses: Causes!
 }
-
 
 schema {
 	query: Query
-	# mutation: Mutation
-	# subscription: Subscription
 }
