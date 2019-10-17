@@ -103,6 +103,29 @@
         }
       }
     },
+    "EventTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "TableName": "dev-event",
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
+      }
+    },
     "GraphQlApi": {
       "Type": "AWS::AppSync::GraphQLApi",
       "Properties": {
@@ -121,7 +144,7 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1602809816
+        "Expires": 1602819380
       }
     },
     "GraphQlSchema": {
@@ -225,6 +248,51 @@
         ]
       }
     },
+    "GraphQlDsEventsRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "appsync.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "GraphQlDsEventsPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:DeleteItem"
+                  ],
+                  "Resource": [
+                    "arn:aws:dynamodb:us-east-1:*:table/dev-event",
+                    "arn:aws:dynamodb:us-east-1:*:table/dev-event/*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "GraphQlDsOrganizations": {
       "Type": "AWS::AppSync::DataSource",
       "Properties": {
@@ -271,6 +339,31 @@
         "DynamoDBConfig": {
           "AwsRegion": "us-east-1",
           "TableName": "dev-cause",
+          "UseCallerCredentials": false
+        }
+      }
+    },
+    "GraphQlDsEvents": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "Name": "Events",
+        "Description": "Events table",
+        "Type": "AMAZON_DYNAMODB",
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "GraphQlDsEventsRole",
+            "Arn"
+          ]
+        },
+        "DynamoDBConfig": {
+          "AwsRegion": "us-east-1",
+          "TableName": "dev-event",
           "UseCallerCredentials": false
         }
       }
@@ -358,6 +451,28 @@
         "DataSourceName": {
           "Fn::GetAtt": [
             "GraphQlDsOrganizations",
+            "Name"
+          ]
+        }
+      }
+    },
+    "GraphQlResolverMutationaddEvent": {
+      "Type": "AWS::AppSync::Resolver",
+      "DependsOn": "GraphQlSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "addEvent",
+        "RequestMappingTemplate": "## Below example shows how to create an object from all provided GraphQL arguments\n## The primary key of the obejct is a randomly generated UUD using the $util.autoId() utility\n## Other utilities include $util.matches() for regular expressions, $util.time.nowISO8601() or\n##   $util.time.nowEpochMilliSeconds() for timestamps, and even List or Map helpers like\n##   $util.list.copyAndRetainAll() $util.map.copyAndRemoveAllKeys() for shallow copies\n## Read more: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference.html#utility-helpers-in-util\n{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"PutItem\",\n    \"key\" : {\n        ## If object \"id\" should come from GraphQL arguments, change to $util.dynamodb.toDynamoDBJson($ctx.args.id)\n        \"id\": $util.dynamodb.toDynamoDBJson($util.autoId()),\n    },\n    \"attributeValues\" : $util.dynamodb.toMapValuesJson($ctx.args)\n}",
+        "ResponseMappingTemplate": "$utils.toJson($context.result)",
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "GraphQlDsEvents",
             "Name"
           ]
         }

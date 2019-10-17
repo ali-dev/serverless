@@ -84,7 +84,12 @@ custom:
         type: Cause
         field: organizationName
         request: "organizationName-request-mapping-template.txt"
-        response: "organizationName-response-mapping-template.txt"      
+        response: "organizationName-response-mapping-template.txt" 
+      - dataSource: Events
+        type: Mutation
+        field: addEvent
+        request: "addEvent-request-mapping-template.txt"
+        response: "addEvent-response-mapping-template.txt"        
       # - dataSource: Tweets
       #   type: Mutation
       #   field: deleteTweet
@@ -195,6 +200,7 @@ provider:
   environment:
     ORGANIZATION_TABLE: "${self:custom.stage}-organization"
     CAUSE_TABLE: "${self:custom.stage}-cause"
+    EVENT_TABLE: "${self:custom.stage}-event"
 
   iamRoleStatements:
     - Effect: Allow
