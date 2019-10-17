@@ -152,7 +152,7 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1602808664
+              "Expires": 1602809816
             }
           },
           "GraphQlSchema": {
@@ -653,7 +653,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1571272664535-2019-10-17T00:37:44.535Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1571273816331-2019-10-17T00:56:56.331Z",
     "artifact": ""
   }
 }

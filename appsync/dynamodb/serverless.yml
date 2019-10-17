@@ -139,7 +139,22 @@ custom:
               Resource:
                 - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-cause"
                 - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-cause/*"
-    
+      - type: AMAZON_DYNAMODB
+        name: Events
+        description: 'Events table'
+        config:
+          tableName: "${self:custom.stage}-event"
+          iamRoleStatements: # custom IAM Role statements for this DataSource. Ignored if `serviceRoleArn` is present. Auto-generated if both `serviceRoleArn` and `iamRoleStatements` are omitted
+            - Effect: "Allow"
+              Action:
+                - "dynamodb:Query"
+                - "dynamodb:UpdateItem"
+                - "dynamodb:PutItem"
+                - "dynamodb:GetItem"
+                - "dynamodb:DeleteItem"
+              Resource:
+                - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-event"
+                - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-event/*"
       # seed: - @todo determine if we need this
       #   test:
       #     sources:
@@ -260,6 +275,23 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: ${self:custom.tableThroughput}
           WriteCapacityUnits: ${self:custom.tableThroughput}
+    EventTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: "id"
+            AttributeType: "S"  
+        KeySchema:
+          -
+            AttributeName: "id"
+            KeyType: "HASH"
+        TableName: ${self:provider.environment.EVENT_TABLE}
+        # Set the capacity based on the stage
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${self:custom.tableThroughput}
+          WriteCapacityUnits: ${self:custom.tableThroughput}  
     
 
 

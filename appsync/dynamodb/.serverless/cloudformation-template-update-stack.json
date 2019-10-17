@@ -121,7 +121,7 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1602808664
+        "Expires": 1602809816
       }
     },
     "GraphQlSchema": {
