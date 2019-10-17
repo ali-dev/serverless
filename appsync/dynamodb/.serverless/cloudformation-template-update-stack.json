@@ -121,7 +121,7 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1602805818
+        "Expires": 1602808664
       }
     },
     "GraphQlSchema": {
@@ -165,7 +165,8 @@
                   "Effect": "Allow",
                   "Action": [
                     "dynamodb:Query",
-                    "dynamodb:UpdateItem"
+                    "dynamodb:UpdateItem",
+                    "dynamodb:GetItem"
                   ],
                   "Resource": [
                     "arn:aws:dynamodb:us-east-1:*:table/dev-organization",
@@ -335,6 +336,28 @@
         "DataSourceName": {
           "Fn::GetAtt": [
             "GraphQlDsCauses",
+            "Name"
+          ]
+        }
+      }
+    },
+    "GraphQlResolverCauseorganizationName": {
+      "Type": "AWS::AppSync::Resolver",
+      "DependsOn": "GraphQlSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "TypeName": "Cause",
+        "FieldName": "organizationName",
+        "RequestMappingTemplate": "{\n    \"version\": \"2017-02-28\",\n    \"operation\": \"GetItem\",\n    \"key\": {\n        \"id\": $util.dynamodb.toDynamoDBJson($ctx.source.organizationId),\n    }\n}",
+        "ResponseMappingTemplate": "## Pass back the result from DynamoDB. **\n$util.toJson($ctx.result.name)",
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "GraphQlDsOrganizations",
             "Name"
           ]
         }

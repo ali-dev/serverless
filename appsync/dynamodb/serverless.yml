@@ -79,7 +79,12 @@ custom:
         type: Query
         field: getAllCauses
         request: "getCauses-request-mapping-template.txt"
-        response: "getCauses-response-mapping-template.txt"    
+        response: "getCauses-response-mapping-template.txt"
+      - dataSource: Organizations
+        type: Cause
+        field: organizationName
+        request: "organizationName-request-mapping-template.txt"
+        response: "organizationName-response-mapping-template.txt"      
       # - dataSource: Tweets
       #   type: Mutation
       #   field: deleteTweet
