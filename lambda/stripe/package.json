@@ -1,0 +1,17 @@
+{
+  "name": "lambda-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "stripe.js",
+  "dependencies": {
+    "stripe": "^7.10.0"
+  },
+  "devDependencies": {
+    "aws-cli": "0.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ali Abu El Haj",
+  "license": "ISC"
+}
