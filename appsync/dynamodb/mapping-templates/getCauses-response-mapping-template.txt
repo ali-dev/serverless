@@ -1,0 +1,3 @@
+{
+"causes": $utils.toJson($context.result.items)
+}

@@ -152,7 +152,7 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1602791008
+              "Expires": 1602805818
             }
           },
           "GraphQlSchema": {
@@ -240,6 +240,7 @@
                           "dynamodb:Query",
                           "dynamodb:UpdateItem",
                           "dynamodb:GetItem",
+                          "dynamodb:Scan",
                           "dynamodb:PutItem",
                           "dynamodb:DeleteItem"
                         ],
@@ -340,6 +341,28 @@
               "FieldName": "getCauseInfo",
               "RequestMappingTemplate": "{\n    \"version\": \"2017-02-28\",\n    \"operation\": \"GetItem\",\n    \"key\": {\n        \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id),\n        \"organizationId\": $util.dynamodb.toDynamoDBJson($ctx.args.organizationId)\n        \n    }\n}",
               "ResponseMappingTemplate": "$util.toJson($ctx.result)",
+              "DataSourceName": {
+                "Fn::GetAtt": [
+                  "GraphQlDsCauses",
+                  "Name"
+                ]
+              }
+            }
+          },
+          "GraphQlResolverQuerygetAllCauses": {
+            "Type": "AWS::AppSync::Resolver",
+            "DependsOn": "GraphQlSchema",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "TypeName": "Query",
+              "FieldName": "getAllCauses",
+              "RequestMappingTemplate": "{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Scan\",\n    ## Add 'limit' and 'nextToken' arguments to this field in your schema to implement pagination. **\n    ## \"limit\": $util.defaultIfNull(${ctx.args.limit}, 20),\n    ## \"nextToken\": $util.toJson($util.defaultIfNullOrBlank($ctx.args.nextToken, null))\n}",
+              "ResponseMappingTemplate": "{\n\"causes\": $utils.toJson($context.result.items)\n}",
               "DataSourceName": {
                 "Fn::GetAtt": [
                   "GraphQlDsCauses",
@@ -459,6 +482,13 @@
             "field": "getCauseInfo",
             "request": "getCauseInfo-request-mapping-template.txt",
             "response": "getCauseInfo-response-mapping-template.txt"
+          },
+          {
+            "dataSource": "Causes",
+            "type": "Query",
+            "field": "getAllCauses",
+            "request": "getCauses-request-mapping-template.txt",
+            "response": "getCauses-response-mapping-template.txt"
           }
         ],
         "schema": null,
@@ -593,7 +623,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1571255008198-2019-10-16T19:43:28.198Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1571269818146-2019-10-16T23:50:18.146Z",
     "artifact": ""
   }
 }

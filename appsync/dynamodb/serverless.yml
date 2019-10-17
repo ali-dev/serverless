@@ -74,7 +74,12 @@ custom:
         type: Query
         field: getCauseInfo
         request: "getCauseInfo-request-mapping-template.txt"
-        response: "getCauseInfo-response-mapping-template.txt"  
+        response: "getCauseInfo-response-mapping-template.txt"
+      - dataSource: Causes
+        type: Query
+        field: getAllCauses
+        request: "getCauses-request-mapping-template.txt"
+        response: "getCauses-response-mapping-template.txt"    
       # - dataSource: Tweets
       #   type: Mutation
       #   field: deleteTweet
@@ -108,6 +113,7 @@ custom:
               Action:
                 - "dynamodb:Query"
                 - "dynamodb:UpdateItem"
+                - "dynamodb:GetItem"
               Resource:
                 - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-organization"
                 - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-organization/*"
@@ -122,6 +128,7 @@ custom:
                 - "dynamodb:Query"
                 - "dynamodb:UpdateItem"
                 - "dynamodb:GetItem"
+                - "dynamodb:Scan"
                 - "dynamodb:PutItem"
                 - "dynamodb:DeleteItem"
               Resource:
