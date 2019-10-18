@@ -176,7 +176,7 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1602819380
+              "Expires": 1602894157
             }
           },
           "GraphQlSchema": {
@@ -323,6 +323,24 @@
                   }
                 }
               ]
+            }
+          },
+          "GraphQlDsStripeLambda": {
+            "Type": "AWS::AppSync::DataSource",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "Name": "Stripe_Lambda",
+              "Description": "Stripe Lambda DataSource",
+              "Type": "AWS_LAMBDA",
+              "ServiceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole",
+              "LambdaConfig": {
+                "LambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:stripe-dev-createCharge"
+              }
             }
           },
           "GraphQlDsOrganizations": {
@@ -564,6 +582,7 @@
       }
     },
     "custom": {
+      "accountId": 395974092468,
       "stage": "dev",
       "tableThroughputs": {
         "prod": 5,
@@ -607,6 +626,7 @@
       "appSync": {
         "name": "dynamodbDemo",
         "authenticationType": "API_KEY",
+        "serviceRole": "AppSyncServiceRole",
         "mappingTemplates": [
           {
             "dataSource": "Organizations",
@@ -646,6 +666,15 @@
         ],
         "schema": null,
         "dataSources": [
+          {
+            "type": "AWS_LAMBDA",
+            "name": "Stripe_Lambda",
+            "description": "Stripe Lambda DataSource",
+            "config": {
+              "lambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:stripe-dev-createCharge",
+              "serviceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole"
+            }
+          },
           {
             "type": "AMAZON_DYNAMODB",
             "name": "Organizations",
@@ -810,7 +839,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1571283380429-2019-10-17T03:36:20.429Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1571358157469-2019-10-18T00:22:37.469Z",
     "artifact": ""
   }
 }

@@ -27,6 +27,7 @@ plugins:
   - serverless-dynamodb-fixtures
 
 custom:
+  accountId: 395974092468
   stage: ${opt:stage, self:provider.stage}
   tableThroughputs:
     prod: 5
@@ -64,6 +65,7 @@ custom:
     #   userPoolId: {Ref: CognitoUserPoolUsers}
     # region: # defaults to provider region
     # mappingTemplatesLocation: # defaults to mapping-templates
+    serviceRole: "AppSyncServiceRole"
     mappingTemplates:
       - dataSource: Organizations
         type: Query
@@ -113,6 +115,12 @@ custom:
     schema: # defaults schema.graphql
     #serviceRole: # if not provided, a default role is generated
     dataSources:
+      - type: AWS_LAMBDA
+        name: Stripe_Lambda
+        description: 'Stripe Lambda DataSource'
+        config:
+          lambdaFunctionArn: "arn:aws:lambda:us-east-1:${self:custom.accountId}:function:stripe-${self:custom.stage}-createCharge"
+          serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Lambda-${self:custom.appSync.serviceRole}"
       - type: AMAZON_DYNAMODB
         name: Organizations
         description: 'Organiations table'
