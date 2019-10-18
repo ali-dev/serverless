@@ -91,7 +91,14 @@ custom:
         type: Mutation
         field: addEvent
         request: "addEvent-request-mapping-template.txt"
-        response: "addEvent-response-mapping-template.txt"        
+        response: "addEvent-response-mapping-template.txt"    
+      - dataSource: Stripe_Lambda
+        type: Mutation
+        field: addCharge
+        request: "addCharge-request-mapping-template.txt"
+        response: "getItemResponse.txt"    
+  
+            
       # - dataSource: Tweets
       #   type: Mutation
       #   field: deleteTweet
@@ -248,7 +255,34 @@ resources:
           GenerateSecret: false
           RefreshTokenValidity: 30
           UserPoolId: {Ref: CognitoUserPoolUsers}
-      
+    AppSyncServiceRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        RoleName: "Lambda-AppSyncServiceRole"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Effect: "Allow"
+              Principal:
+                Service:
+                  - "appsync.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        Policies:
+          -
+            PolicyName: "Lambda-AppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                -
+                  Effect: "Allow"
+                  Action:
+                    - "lambda:invokeFunction"
+                  Resource:
+                    - "arn:aws:lambda:us-east-1:*:function:stripe-${self:custom.stage}-createCharge"
+                    - "arn:aws:lambda:us-east-1:*:function:stripe-${self:custom.stage}-createCharge:*"
+  
     OrganizationTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain

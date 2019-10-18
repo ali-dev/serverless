@@ -12,8 +12,17 @@ type Causes {
 	causes: [Cause!]
 }
 
-type Organization {
+type Event {
 	id: String!
+	eventName: String!
+}
+
+type Mutation {
+	addEvent(eventName: String!): Event!
+	addCharge: StripeCharge!
+}
+
+type Organization {
 	name: String!
 }
 
@@ -23,6 +32,11 @@ type Query {
 	getAllCauses: Causes!
 }
 
+type StripeCharge {
+	body: String!
+}
+
 schema {
 	query: Query
+	mutation: Mutation
 }

@@ -49,6 +49,48 @@
         }
       }
     },
+    "AppSyncServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "Lambda-AppSyncServiceRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "appsync.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "Lambda-AppSyncServiceRole-Policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:invokeFunction"
+                  ],
+                  "Resource": [
+                    "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge",
+                    "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge:*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "OrganizationTable": {
       "Type": "AWS::DynamoDB::Table",
       "DeletionPolicy": "Retain",
@@ -144,13 +186,13 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1602894157
+        "Expires": 1602904051
       }
     },
     "GraphQlSchema": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
-        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Organization {\n\tid: String!\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n}\n\nschema {\n\tquery: Query\n}",
+        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!\n}\n\ntype Mutation {\n\taddEvent(eventName: String!): Event!\n\taddCharge: StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
         "ApiId": {
           "Fn::GetAtt": [
             "GraphQlApi",
@@ -491,6 +533,28 @@
         "DataSourceName": {
           "Fn::GetAtt": [
             "GraphQlDsEvents",
+            "Name"
+          ]
+        }
+      }
+    },
+    "GraphQlResolverMutationaddCharge": {
+      "Type": "AWS::AppSync::Resolver",
+      "DependsOn": "GraphQlSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "addCharge",
+        "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"createCharge\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)",
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "GraphQlDsStripeLambda",
             "Name"
           ]
         }
