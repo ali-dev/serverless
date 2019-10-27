@@ -141,8 +141,8 @@
               ],
               "TableName": "dev-organization",
               "ProvisionedThroughput": {
-                "ReadCapacityUnits": 1,
-                "WriteCapacityUnits": 1
+                "ReadCapacityUnits": 3,
+                "WriteCapacityUnits": 3
               }
             }
           },
@@ -172,8 +172,8 @@
               ],
               "TableName": "dev-cause",
               "ProvisionedThroughput": {
-                "ReadCapacityUnits": 1,
-                "WriteCapacityUnits": 1
+                "ReadCapacityUnits": 3,
+                "WriteCapacityUnits": 3
               }
             }
           },
@@ -195,8 +195,8 @@
               ],
               "TableName": "dev-event",
               "ProvisionedThroughput": {
-                "ReadCapacityUnits": 1,
-                "WriteCapacityUnits": 1
+                "ReadCapacityUnits": 3,
+                "WriteCapacityUnits": 3
               }
             }
           },
@@ -218,13 +218,13 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1602904051
+              "Expires": 1603673349
             }
           },
           "GraphQlSchema": {
             "Type": "AWS::AppSync::GraphQLSchema",
             "Properties": {
-              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!\n}\n\ntype Mutation {\n\taddEvent(eventName: String!): Event!\n\taddCharge: StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!\n}\n\ntype Mutation {\n\taddEvent(eventName: String!, address: String!, zipCode: String): Event!\n\taddCharge: StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
               "ApiId": {
                 "Fn::GetAtt": [
                   "GraphQlApi",
@@ -650,9 +650,9 @@
       "stage": "dev",
       "tableThroughputs": {
         "prod": 5,
-        "default": 1
+        "default": 3
       },
-      "tableThroughput": 1,
+      "tableThroughput": 3,
       "appsync-offline": {
         "port": 62222,
         "dynamodb": {
@@ -886,8 +886,8 @@
             ],
             "TableName": "dev-organization",
             "ProvisionedThroughput": {
-              "ReadCapacityUnits": 1,
-              "WriteCapacityUnits": 1
+              "ReadCapacityUnits": 3,
+              "WriteCapacityUnits": 3
             }
           }
         },
@@ -917,8 +917,8 @@
             ],
             "TableName": "dev-cause",
             "ProvisionedThroughput": {
-              "ReadCapacityUnits": 1,
-              "WriteCapacityUnits": 1
+              "ReadCapacityUnits": 3,
+              "WriteCapacityUnits": 3
             }
           }
         },
@@ -940,8 +940,8 @@
             ],
             "TableName": "dev-event",
             "ProvisionedThroughput": {
-              "ReadCapacityUnits": 1,
-              "WriteCapacityUnits": 1
+              "ReadCapacityUnits": 3,
+              "WriteCapacityUnits": 3
             }
           }
         }
@@ -952,7 +952,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1571368051326-2019-10-18T03:07:31.326Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1572137349029-2019-10-27T00:49:09.029Z",
     "artifact": ""
   }
 }

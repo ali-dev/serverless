@@ -18,7 +18,7 @@ type Event {
 }
 
 type Mutation {
-	addEvent(eventName: String!): Event!
+	addEvent(eventName: String!, address: String!, zipCode: String): Event!
 	addCharge: StripeCharge!
 }
 
