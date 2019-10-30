@@ -15,7 +15,15 @@ type Causes {
 type Event {
 	id: String!
 	eventName: String!,
-	viewId: String!
+	location: String!,
+	date: String!,
+	time: String!,
+	minDonation: Int,
+	recommendedDonation: Int!,
+	maxCapacity: Int!,
+	viewId: String!,
+	rsvpId: String!,
+	editId: String!
 }
 
 type Mutation {
@@ -32,6 +40,7 @@ type Query {
 	getOrganizationInfo(name: String!): Organization!
 	getCauseInfo(id: String!, organizationId: String!): Cause
 	getAllCauses: Causes!
+	getEventForView(viewId: String!): Event!
 }
 
 type StripeCharge {

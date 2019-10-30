@@ -91,7 +91,12 @@ custom:
         type: Mutation
         field: addEvent
         request: "addEvent-request-mapping-template.txt"
-        response: "addEvent-response-mapping-template.txt"    
+        response: "addEvent-response-mapping-template.txt" 
+      - dataSource: Events
+        type: Query
+        field: getEventForView
+        request: "getEventForView-request-mapping-template.txt"
+        response: "getItemResponse.txt"     
       - dataSource: Stripe_Lambda
         type: Mutation
         field: addCharge

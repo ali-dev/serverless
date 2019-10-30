@@ -186,13 +186,13 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1603940504
+        "Expires": 1603942095
       }
     },
     "GraphQlSchema": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
-        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tviewId: String!\n}\n\ntype Mutation {\n\taddEvent(\n\teventName: String!, location: String!, minDonation: Int, recommendedDonation: Int!, maxCapacity: Int!, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!\n\taddCharge: StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tminDonation: Int,\n\trecommendedDonation: Int!,\n\tmaxCapacity: Int!,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!\n}\n\ntype Mutation {\n\taddEvent(\n\teventName: String!, location: String!, minDonation: Int, recommendedDonation: Int!, maxCapacity: Int!, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!\n\taddCharge: StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
         "ApiId": {
           "Fn::GetAtt": [
             "GraphQlApi",
@@ -530,6 +530,28 @@
         "FieldName": "addEvent",
         "RequestMappingTemplate": "## Below example shows how to create an object from all provided GraphQL arguments\n## The primary key of the obejct is a randomly generated UUD using the $util.autoId() utility\n## Other utilities include $util.matches() for regular expressions, $util.time.nowISO8601() or\n##   $util.time.nowEpochMilliSeconds() for timestamps, and even List or Map helpers like\n##   $util.list.copyAndRetainAll() $util.map.copyAndRemoveAllKeys() for shallow copies\n## Read more: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-context-reference.html#utility-helpers-in-util\n{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"PutItem\",\n    \"key\" : {\n        ## If object \"id\" should come from GraphQL arguments, change to $util.dynamodb.toDynamoDBJson($ctx.args.id)\n        \"id\": $util.dynamodb.toDynamoDBJson($util.autoId()),\n    },\n    \"attributeValues\" : $util.dynamodb.toMapValuesJson($ctx.args)\n}",
         "ResponseMappingTemplate": "$utils.toJson($context.result)",
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "GraphQlDsEvents",
+            "Name"
+          ]
+        }
+      }
+    },
+    "GraphQlResolverQuerygetEventForView": {
+      "Type": "AWS::AppSync::Resolver",
+      "DependsOn": "GraphQlSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "TypeName": "Query",
+        "FieldName": "getEventForView",
+        "RequestMappingTemplate": "{\n    \"version\": \"2017-02-28\",\n    \"operation\": \"GetItem\",\n    \"key\": {\n        \"viewId\": $util.dynamodb.toDynamoDBJson($ctx.args.viewId)\n    }\n}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)",
         "DataSourceName": {
           "Fn::GetAtt": [
             "GraphQlDsEvents",
