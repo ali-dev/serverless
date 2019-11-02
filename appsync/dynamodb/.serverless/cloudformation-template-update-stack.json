@@ -153,6 +153,10 @@
           {
             "AttributeName": "id",
             "AttributeType": "S"
+          },
+          {
+            "AttributeName": "viewId",
+            "AttributeType": "S"
           }
         ],
         "KeySchema": [
@@ -165,7 +169,25 @@
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 3,
           "WriteCapacityUnits": 3
-        }
+        },
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "viewIds-index",
+            "KeySchema": [
+              {
+                "AttributeName": "viewId",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": "3",
+              "WriteCapacityUnits": "3"
+            }
+          }
+        ]
       }
     },
     "GraphQlApi": {
@@ -186,7 +208,7 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1603942095
+        "Expires": 1604190226
       }
     },
     "GraphQlSchema": {
@@ -550,8 +572,8 @@
         },
         "TypeName": "Query",
         "FieldName": "getEventForView",
-        "RequestMappingTemplate": "{\n    \"version\": \"2017-02-28\",\n    \"operation\": \"GetItem\",\n    \"key\": {\n        \"viewId\": $util.dynamodb.toDynamoDBJson($ctx.args.viewId)\n    }\n}",
-        "ResponseMappingTemplate": "$util.toJson($ctx.result)",
+        "RequestMappingTemplate": "## Below example shows an equality query to find an item by GraphQL input argument of \"id\"\n## Queries can be run against a table or an index, which can be more performant than a Scan operation\n##   If using an index you will also provide an \"index\" : \"indexname\" where indexname is the name of your index\n## \"expression\" is the logical EQUALITY condition that will be evaluated\n## \"espressionValues\" is the attribute in DynamoDB that you're evaluating the \"expression\" condition against\n## You can optionally provide \"filter\" that will filter the results returned from a query\n## Read more: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html#aws-appsync-resolver-mapping-template-reference-dynamodb-query\n\n{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Query\",\n    \"index\" : \"viewIds-index\",\n    \"query\" : {\n        ## Provide a query expression. **\n        \"expression\": \"viewId = :viewId\",\n        \"expressionValues\" : {\n            \":viewId\" : $util.dynamodb.toDynamoDBJson($ctx.args.viewId)\n        }\n    }\n}",
+        "ResponseMappingTemplate": "#if ($ctx.result.items.size() > 0)\n  $util.toJson($ctx.result.items[0])\n#else\n  null\n#end",
         "DataSourceName": {
           "Fn::GetAtt": [
             "GraphQlDsEvents",

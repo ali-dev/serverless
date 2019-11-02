@@ -96,7 +96,7 @@ custom:
         type: Query
         field: getEventForView
         request: "getEventForView-request-mapping-template.txt"
-        response: "getItemResponse.txt"     
+        response: "getEventForView-response-mapping-template.txt"     
       - dataSource: Stripe_Lambda
         type: Mutation
         field: addCharge
@@ -335,7 +335,10 @@ resources:
         AttributeDefinitions:
           -
             AttributeName: "id"
-            AttributeType: "S"  
+            AttributeType: "S"
+          -
+            AttributeName: "viewId"
+            AttributeType: "S"      
         KeySchema:
           -
             AttributeName: "id"
@@ -345,7 +348,16 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: ${self:custom.tableThroughput}
           WriteCapacityUnits: ${self:custom.tableThroughput}  
-    
+        GlobalSecondaryIndexes:
+        - IndexName: viewIds-index
+          KeySchema:
+          - AttributeName: viewId
+            KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: '3'
+            WriteCapacityUnits: '3'
 
 
 
