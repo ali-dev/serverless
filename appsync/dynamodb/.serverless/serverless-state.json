@@ -240,13 +240,13 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1604190226
+              "Expires": 1612202467
             }
           },
           "GraphQlSchema": {
             "Type": "AWS::AppSync::GraphQLSchema",
             "Properties": {
-              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tminDonation: Int,\n\trecommendedDonation: Int!,\n\tmaxCapacity: Int!,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!\n}\n\ntype Mutation {\n\taddEvent(\n\teventName: String!, location: String!, minDonation: Int, recommendedDonation: Int!, maxCapacity: Int!, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!\n\taddCharge: StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tminDonation: Int,\n\trecommendedDonation: Int!,\n\tmaxCapacity: Int!,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!\n}\n\ntype Mutation {\n\taddEvent(\n\teventName: String!, location: String!, minDonation: Int, recommendedDonation: Int!, maxCapacity: Int!, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!\n\taddCharge(token: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
               "ApiId": {
                 "Fn::GetAtt": [
                   "GraphQlApi",
@@ -1025,7 +1025,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1572654226062-2019-11-02T00:23:46.062Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1580666467571-2020-02-02T18:01:07.571Z",
     "artifact": ""
   }
 }

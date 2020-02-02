@@ -29,7 +29,7 @@ type Event {
 type Mutation {
 	addEvent(
 	eventName: String!, location: String!, minDonation: Int, recommendedDonation: Int!, maxCapacity: Int!, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!
-	addCharge: StripeCharge!
+	addCharge(token: String!): StripeCharge!
 }
 
 type Organization {
