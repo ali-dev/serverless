@@ -15,6 +15,7 @@ type Causes {
 type Event {
 	id: String!
 	eventName: String!,
+	cause: String!,
 	hostName: String!,
 	hostEmail: String!,
 	location: String!,
@@ -30,7 +31,7 @@ type Event {
 
 type Mutation {
 	addEvent(
-	eventName: String!, hostName: String!, hostEmail: String!, location: String!, minDonation: Int!, recommendedDonation: Int, maxCapacity: Int, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!
+	eventName: String!, cause: String!, hostName: String!, hostEmail: String!, location: String!, minDonation: Int!, recommendedDonation: Int, maxCapacity: Int, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!
 	addCharge(token: String!): StripeCharge!
 }
 
