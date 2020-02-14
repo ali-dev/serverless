@@ -106,7 +106,12 @@ custom:
         type: Mutation
         field: addCharge
         request: "addCharge-request-mapping-template.txt"
-        response: "getItemResponse.txt"    
+        response: "getItemResponse.txt"  
+      - dataSource: Causes
+        type: Event
+        field: causeDetails
+        request: "eventCauseDetails-request-mapping-template.txt"
+        response: "eventCauseDetails-response-mapping-template.txt"     
   
             
       # - dataSource: Tweets
