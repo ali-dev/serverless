@@ -96,7 +96,12 @@ custom:
         type: Query
         field: getEventForView
         request: "getEventForView-request-mapping-template.txt"
-        response: "getEventForView-response-mapping-template.txt"     
+        response: "getEventForView-response-mapping-template.txt"   
+      - dataSource: Events
+        type: Query
+        field: getEventForEdit
+        request: "getEventForEdit-request-mapping-template.txt"
+        response: "getEventForEdit-response-mapping-template.txt"       
       - dataSource: Stripe_Lambda
         type: Mutation
         field: addCharge
@@ -338,6 +343,9 @@ resources:
             AttributeType: "S"
           -
             AttributeName: "viewId"
+            AttributeType: "S"
+          -
+            AttributeName: "editId"
             AttributeType: "S"      
         KeySchema:
           -
@@ -358,7 +366,15 @@ resources:
           ProvisionedThroughput:
             ReadCapacityUnits: '3'
             WriteCapacityUnits: '3'
-
+        - IndexName: editIdss-index
+          KeySchema:
+          - AttributeName: editId
+            KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: '3'
+            WriteCapacityUnits: '3'
 
 
 

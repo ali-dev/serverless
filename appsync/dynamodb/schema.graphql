@@ -44,6 +44,7 @@ type Query {
 	getCauseInfo(id: String!, organizationId: String!): Cause
 	getAllCauses: Causes!
 	getEventForView(viewId: String!): Event!
+	getEventForEdit(editId: String!): Event!
 }
 
 type StripeCharge {

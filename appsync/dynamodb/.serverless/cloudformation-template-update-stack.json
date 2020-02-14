@@ -157,6 +157,10 @@
           {
             "AttributeName": "viewId",
             "AttributeType": "S"
+          },
+          {
+            "AttributeName": "editId",
+            "AttributeType": "S"
           }
         ],
         "KeySchema": [
@@ -176,6 +180,22 @@
             "KeySchema": [
               {
                 "AttributeName": "viewId",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": "3",
+              "WriteCapacityUnits": "3"
+            }
+          },
+          {
+            "IndexName": "editIdss-index",
+            "KeySchema": [
+              {
+                "AttributeName": "editId",
                 "KeyType": "HASH"
               }
             ],
@@ -208,13 +228,13 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1612843920
+        "Expires": 1612854624
       }
     },
     "GraphQlSchema": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
-        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tminDonation: Int!,\n\trecommendedDonation: Int,\n\tmaxCapacity: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!\n}\n\ntype Mutation {\n\taddEvent(\n\teventName: String!, cause: String!, hostName: String!, hostEmail: String!, location: String!, minDonation: Int!, recommendedDonation: Int, maxCapacity: Int, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!\n\taddCharge(token: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tminDonation: Int!,\n\trecommendedDonation: Int,\n\tmaxCapacity: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!\n}\n\ntype Mutation {\n\taddEvent(\n\teventName: String!, cause: String!, hostName: String!, hostEmail: String!, location: String!, minDonation: Int!, recommendedDonation: Int, maxCapacity: Int, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!): Event!\n\taddCharge(token: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
         "ApiId": {
           "Fn::GetAtt": [
             "GraphQlApi",
@@ -573,6 +593,28 @@
         "TypeName": "Query",
         "FieldName": "getEventForView",
         "RequestMappingTemplate": "## Below example shows an equality query to find an item by GraphQL input argument of \"id\"\n## Queries can be run against a table or an index, which can be more performant than a Scan operation\n##   If using an index you will also provide an \"index\" : \"indexname\" where indexname is the name of your index\n## \"expression\" is the logical EQUALITY condition that will be evaluated\n## \"espressionValues\" is the attribute in DynamoDB that you're evaluating the \"expression\" condition against\n## You can optionally provide \"filter\" that will filter the results returned from a query\n## Read more: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html#aws-appsync-resolver-mapping-template-reference-dynamodb-query\n\n{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Query\",\n    \"index\" : \"viewIds-index\",\n    \"query\" : {\n        ## Provide a query expression. **\n        \"expression\": \"viewId = :viewId\",\n        \"expressionValues\" : {\n            \":viewId\" : $util.dynamodb.toDynamoDBJson($ctx.args.viewId)\n        }\n    }\n}",
+        "ResponseMappingTemplate": "#if ($ctx.result.items.size() > 0)\n  $util.toJson($ctx.result.items[0])\n#else\n  null\n#end",
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "GraphQlDsEvents",
+            "Name"
+          ]
+        }
+      }
+    },
+    "GraphQlResolverQuerygetEventForEdit": {
+      "Type": "AWS::AppSync::Resolver",
+      "DependsOn": "GraphQlSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "TypeName": "Query",
+        "FieldName": "getEventForEdit",
+        "RequestMappingTemplate": "## Below example shows an equality query to find an item by GraphQL input argument of \"id\"\n## Queries can be run against a table or an index, which can be more performant than a Scan operation\n##   If using an index you will also provide an \"index\" : \"indexname\" where indexname is the name of your index\n## \"expression\" is the logical EQUALITY condition that will be evaluated\n## \"espressionValues\" is the attribute in DynamoDB that you're evaluating the \"expression\" condition against\n## You can optionally provide \"filter\" that will filter the results returned from a query\n## Read more: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html#aws-appsync-resolver-mapping-template-reference-dynamodb-query\n\n{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Query\",\n    \"index\" : \"editIdss-index\",\n    \"query\" : {\n        ## Provide a query expression. **\n        \"expression\": \"editId = :editId\",\n        \"expressionValues\" : {\n            \":editId\" : $util.dynamodb.toDynamoDBJson($ctx.args.editId)\n        }\n    }\n}",
         "ResponseMappingTemplate": "#if ($ctx.result.items.size() > 0)\n  $util.toJson($ctx.result.items[0])\n#else\n  null\n#end",
         "DataSourceName": {
           "Fn::GetAtt": [
