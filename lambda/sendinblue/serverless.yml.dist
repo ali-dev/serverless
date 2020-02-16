@@ -50,3 +50,5 @@ Resources:
                 - lambda.amazonaws.com
                 # - edgelambda.amazonaws.com
 
+plugins:
+  - serverless-offline
