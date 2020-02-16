@@ -1,0 +1,29 @@
+{
+  "name": "sendinblue",
+  "version": "1.0.0",
+  "description": "Micro-service for sending emails",
+  "main": "sendinblue.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ali-dev/serverless.git"
+  },
+  "keywords": [
+    "AWS",
+    "Lambda",
+    "SendinBlue",
+    "Transactional",
+    "Emails"
+  ],
+  "author": "Ali Abu El Haj",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ali-dev/serverless/issues"
+  },
+  "homepage": "https://github.com/ali-dev/serverless#readme",
+  "dependencies": {
+    "sib-api-v3-sdk": "^7.1.4"
+  }
+}
