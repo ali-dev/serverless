@@ -4,9 +4,16 @@ var SibApiV3Sdk = require('sib-api-v3-sdk');
 
 module.exports.sendEventCreatedEmail = (event, context, callback) => {
     
-    const data = event.data;
+    let data = event.body;
+    if (typeof event.body == 'string') {
+      console.log(data);
+      data = JSON.parse(data);
+    } else {
+      data = event.body;
+    }
+    
     // let data = {};
-    console.log(data);
+    console.log(data['hostName']);
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
  
     // Configure API key authorization: api-key
@@ -21,15 +28,17 @@ module.exports.sendEventCreatedEmail = (event, context, callback) => {
     
     
     const apiInstance = new SibApiV3Sdk.SMTPApi
+    const to = [{'email': data.hostEmail, 'name': data.hostName}];
     var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); 
-    sendSmtpEmail.templateId = '3';
-    sendSmtpEmail.To = data.hostEmail;
+    sendSmtpEmail.templateId = 3;
+    sendSmtpEmail.to = to; 
+    data.hostEmail;
     sendSmtpEmail.params = {
-        'HOST_NAME': data.hostName,
+        'hostName': data.hostName,
         'causeName': data.causeName,
         'editId': data.editId
     },
-    sendSmtpEmail.tags = ['eventCreated', 'events']
+    sendSmtpEmail.tags = Array['eventCreated', 'events'];
 
 
     
