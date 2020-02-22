@@ -23,9 +23,9 @@ type Event {
 	location: String!,
 	date: String!,
 	time: String!,
-	minDonation: Int!,
+	endTime: String,
+	eventDetails: String!,
 	recommendedDonation: Int,
-	maxCapacity: Int,
 	viewId: String!,
 	rsvpId: String!,
 	editId: String!,
@@ -34,7 +34,22 @@ type Event {
 
 type Mutation {
 	addEvent(
-	eventName: String!, cause: String!, organizationId: String!, hostName: String!, hostEmail: String!, location: String!, minDonation: Int!, recommendedDonation: Int, maxCapacity: Int, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!, guests: AWSJSON): Event!
+		eventName: String!, 
+		cause: String!, 
+		organizationId: String!, 
+		hostName: String!, 
+		hostEmail: String!, 
+		location: String!, 
+		recommendedDonation: Int, 
+		date: String!, 
+		time: String!,
+		endTime: String,
+		eventDetails: String!,
+		viewId: String!, 
+		editId: String!, 
+		rsvpId: String!, 
+		guests: AWSJSON
+	): Event!
 	addCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!
 }
 

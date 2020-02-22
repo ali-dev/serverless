@@ -260,13 +260,13 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1613931676
+              "Expires": 1613936264
             }
           },
           "GraphQlSchema": {
             "Type": "AWS::AppSync::GraphQLSchema",
             "Properties": {
-              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tminDonation: Int!,\n\trecommendedDonation: Int,\n\tmaxCapacity: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\teventName: String!, cause: String!, organizationId: String!, hostName: String!, hostEmail: String!, location: String!, minDonation: Int!, recommendedDonation: Int, maxCapacity: Int, date: String!, time: String!, viewId: String!, editId: String!, rsvpId: String!, guests: AWSJSON): Event!\n\taddCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tendTime: String,\n\teventDetails: String!,\n\trecommendedDonation: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): Event!\n\taddCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
               "ApiId": {
                 "Fn::GetAtt": [
                   "GraphQlApi",
@@ -1123,7 +1123,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1582395676434-2020-02-22T18:21:16.434Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1582400264804-2020-02-22T19:37:44.804Z",
     "artifact": ""
   }
 }
