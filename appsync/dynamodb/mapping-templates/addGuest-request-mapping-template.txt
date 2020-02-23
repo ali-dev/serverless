@@ -1,0 +1,18 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "UpdateItem",
+    "key" : {
+        ## If object "id" should come from GraphQL arguments, change to $util.dynamodb.toDynamoDBJson($ctx.args.id)
+        "id": $util.dynamodb.toDynamoDBJson($ctx.args.eventId),
+    },
+    "update" : {
+        "expression" : "SET guests.#guest_id = :guestDetails ADD version :one",
+        "expressionNames": {
+            "#guest_id" : "${ctx.args.guestId}"
+        },
+        "expressionValues": {
+            ":guestDetails" : $util.dynamodb.toDynamoDBJson($ctx.arguments.guestDetails),
+            ":one" : { "N": 1 }
+        }
+    }
+}

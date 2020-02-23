@@ -50,6 +50,7 @@ type Mutation {
 		rsvpId: String!, 
 		guests: AWSJSON
 	): Event!
+	addGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON
 	addCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!
 }
 
