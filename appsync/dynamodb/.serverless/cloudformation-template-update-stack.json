@@ -228,13 +228,13 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1613948970
+        "Expires": 1614629620
       }
     },
     "GraphQlSchema": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
-        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tendTime: String,\n\teventDetails: String!,\n\trecommendedDonation: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): Event!\n\taddGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON\n\taddCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tendTime: String,\n\teventDetails: String!,\n\trecommendedDonation: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): Event!\n\taddGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON\n\tremoveGuest(guestId: String!, eventId: String!): AWSJSON\n\taddCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
         "ApiId": {
           "Fn::GetAtt": [
             "GraphQlApi",
@@ -594,6 +594,28 @@
         "FieldName": "addGuest",
         "RequestMappingTemplate": "{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"UpdateItem\",\n    \"key\" : {\n        ## If object \"id\" should come from GraphQL arguments, change to $util.dynamodb.toDynamoDBJson($ctx.args.id)\n        \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.eventId),\n    },\n    \"update\" : {\n        \"expression\" : \"SET guests.#guest_id = :guestDetails ADD version :one\",\n        \"expressionNames\": {\n            \"#guest_id\" : \"${ctx.args.guestId}\"\n        },\n        \"expressionValues\": {\n            \":guestDetails\" : $util.dynamodb.toDynamoDBJson($ctx.arguments.guestDetails),\n            \":one\" : { \"N\": 1 }\n        }\n    }\n}",
         "ResponseMappingTemplate": "## Pass back the result from DynamoDB. **\n$util.toJson($ctx.result.guests[\"${ctx.args.guestId}\"])",
+        "DataSourceName": {
+          "Fn::GetAtt": [
+            "GraphQlDsEvents",
+            "Name"
+          ]
+        }
+      }
+    },
+    "GraphQlResolverMutationremoveGuest": {
+      "Type": "AWS::AppSync::Resolver",
+      "DependsOn": "GraphQlSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "GraphQlApi",
+            "ApiId"
+          ]
+        },
+        "TypeName": "Mutation",
+        "FieldName": "removeGuest",
+        "RequestMappingTemplate": "{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"UpdateItem\",\n    \"key\" : {\n        ## If object \"id\" should come from GraphQL arguments, change to $util.dynamodb.toDynamoDBJson($ctx.args.id)\n        \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.eventId),\n    },\n    \"update\" : {\n        \"expression\" : \"REMOVE guests.#guest_id ADD version :one\",\n        \"expressionNames\": {\n            \"#guest_id\" : \"${ctx.args.guestId}\"\n        },\n        \"expressionValues\": {\n            \":one\" : { \"N\": 1 }\n        }\n    }\n}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)",
         "DataSourceName": {
           "Fn::GetAtt": [
             "GraphQlDsEvents",

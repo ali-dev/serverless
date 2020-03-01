@@ -96,7 +96,12 @@ custom:
         type: Mutation
         field: addGuest
         request: "addGuest-request-mapping-template.txt"
-        response: "addGuest-response-mapping-template.txt"   
+        response: "addGuest-response-mapping-template.txt"
+      - dataSource: Events
+        type: Mutation
+        field: removeGuest
+        request: "removeGuest-request-mapping-template.txt"
+        response: "getItemResponse.txt"   
       - dataSource: Events
         type: Query
         field: getEventForView
