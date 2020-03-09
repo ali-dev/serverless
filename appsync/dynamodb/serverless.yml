@@ -116,6 +116,11 @@ custom:
         type: Mutation
         field: addCharge
         request: "addCharge-request-mapping-template.txt"
+        response: "getItemResponse.txt"
+      - dataSource: Email_Send_Invitation_Lambda
+        type: Mutation
+        field: sendInvitation
+        request: "sendInvitation-request-mapping-template.txt"
         response: "getItemResponse.txt"  
       - dataSource: Causes
         type: Event
@@ -153,6 +158,12 @@ custom:
         config:
           lambdaFunctionArn: "arn:aws:lambda:us-east-1:${self:custom.accountId}:function:stripe-${self:custom.stage}-createCharge"
           serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Lambda-${self:custom.appSync.serviceRole}"
+      - type: AWS_LAMBDA
+        name: Email_Send_Invitation_Lambda
+        description: 'Send Invitation Lambda DataSource'
+        config:
+          lambdaFunctionArn: "arn:aws:lambda:us-east-1:${self:custom.accountId}:function:email-${self:custom.stage}-sendInvition"
+          serviceRoleArn: "arn:aws:iam::${self:custom.accountId}:role/Lambda-${self:custom.appSync.serviceRole}"  
       - type: AMAZON_DYNAMODB
         name: Organizations
         description: 'Organiations table'
@@ -307,6 +318,8 @@ resources:
                   Resource:
                     - "arn:aws:lambda:us-east-1:*:function:stripe-${self:custom.stage}-createCharge"
                     - "arn:aws:lambda:us-east-1:*:function:stripe-${self:custom.stage}-createCharge:*"
+                    - "arn:aws:lambda:us-east-1:*:function:email-${self:custom.stage}-sendInvitation"
+                    - "arn:aws:lambda:us-east-1:*:function:email-${self:custom.stage}-sendInvitation:*"
   
     OrganizationTable:
       Type: 'AWS::DynamoDB::Table'

@@ -114,7 +114,9 @@
                         ],
                         "Resource": [
                           "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge",
-                          "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge:*"
+                          "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge:*",
+                          "arn:aws:lambda:us-east-1:*:function:email-dev-sendInvitation",
+                          "arn:aws:lambda:us-east-1:*:function:email-dev-sendInvitation:*"
                         ]
                       }
                     ]
@@ -260,13 +262,13 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1614629620
+              "Expires": 1615264417
             }
           },
           "GraphQlSchema": {
             "Type": "AWS::AppSync::GraphQLSchema",
             "Properties": {
-              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tendTime: String,\n\teventDetails: String!,\n\trecommendedDonation: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): Event!\n\taddGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON\n\tremoveGuest(guestId: String!, eventId: String!): AWSJSON\n\taddCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+              "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tendTime: String,\n\teventDetails: String!,\n\trecommendedDonation: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): Event!\n\taddGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON\n\tremoveGuest(guestId: String!, eventId: String!): AWSJSON\n\taddCharge(token: String!, eventId: String!, guestId: String!, causeId: String!, amount: Int, rsvp: String!): StripeCharge!\n\tsendInvitation(data: String!): AWSJSON!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
               "ApiId": {
                 "Fn::GetAtt": [
                   "GraphQlApi",
@@ -424,6 +426,24 @@
               "ServiceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole",
               "LambdaConfig": {
                 "LambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:stripe-dev-createCharge"
+              }
+            }
+          },
+          "GraphQlDsEmailSendInvitationLambda": {
+            "Type": "AWS::AppSync::DataSource",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "Name": "Email_Send_Invitation_Lambda",
+              "Description": "Send Invitation Lambda DataSource",
+              "Type": "AWS_LAMBDA",
+              "ServiceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole",
+              "LambdaConfig": {
+                "LambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvition"
               }
             }
           },
@@ -722,6 +742,28 @@
               }
             }
           },
+          "GraphQlResolverMutationsendInvitation": {
+            "Type": "AWS::AppSync::Resolver",
+            "DependsOn": "GraphQlSchema",
+            "Properties": {
+              "ApiId": {
+                "Fn::GetAtt": [
+                  "GraphQlApi",
+                  "ApiId"
+                ]
+              },
+              "TypeName": "Mutation",
+              "FieldName": "sendInvitation",
+              "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"sendInvitation\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
+              "ResponseMappingTemplate": "$util.toJson($ctx.result)",
+              "DataSourceName": {
+                "Fn::GetAtt": [
+                  "GraphQlDsEmailSendInvitationLambda",
+                  "Name"
+                ]
+              }
+            }
+          },
           "GraphQlResolverEventcauseDetails": {
             "Type": "AWS::AppSync::Resolver",
             "DependsOn": "GraphQlSchema",
@@ -915,6 +957,13 @@
             "response": "getItemResponse.txt"
           },
           {
+            "dataSource": "Email_Send_Invitation_Lambda",
+            "type": "Mutation",
+            "field": "sendInvitation",
+            "request": "sendInvitation-request-mapping-template.txt",
+            "response": "getItemResponse.txt"
+          },
+          {
             "dataSource": "Causes",
             "type": "Event",
             "field": "causeDetails",
@@ -930,6 +979,15 @@
             "description": "Stripe Lambda DataSource",
             "config": {
               "lambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:stripe-dev-createCharge",
+              "serviceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole"
+            }
+          },
+          {
+            "type": "AWS_LAMBDA",
+            "name": "Email_Send_Invitation_Lambda",
+            "description": "Send Invitation Lambda DataSource",
+            "config": {
+              "lambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvition",
               "serviceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole"
             }
           },
@@ -1046,7 +1104,9 @@
                       ],
                       "Resource": [
                         "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge",
-                        "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge:*"
+                        "arn:aws:lambda:us-east-1:*:function:stripe-dev-createCharge:*",
+                        "arn:aws:lambda:us-east-1:*:function:email-dev-sendInvitation",
+                        "arn:aws:lambda:us-east-1:*:function:email-dev-sendInvitation:*"
                       ]
                     }
                   ]
@@ -1181,7 +1241,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1583093620099-2020-03-01T20:13:40.099Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1583728417798-2020-03-09T04:33:37.798Z",
     "artifact": ""
   }
 }
