@@ -10,15 +10,13 @@ const sendInvitation = (event, context, callback) => {
   const serverToken = process.env.POSTMAN_SERVER_TOKEN; //"xxxx-xxxxx-xxxx-xxxxx-xxxxxx";
   const client = new postmark.ServerClient(serverToken);
   
-  console.log(data);
-  console.log(`TOKEN: ${serverToken}`);
   
   (async () => {
     // trigger email here
     client.sendEmailWithTemplate({
       "From": "ali@causeandcuisine.com", //@todo determine if it is best practice to add the sender's email 
       "To": "ali@causeandcuisine.com", //@todo: change to data.guestEmail, after we start paying - `While your account is pending approval, all recipient addresses must share the same domain as the 'From' address.`
-      "TemplateId": "16783368",
+      "TemplateId": process.env.TEMPLATE_ID_SEND_INVITATION,
       "TemplateModel": {
         "name": data.guestName,
         "event_name": data.eventName,

@@ -1,9 +1,12 @@
 dev:
   env_vars:
     POSTMAN_SERVER_TOKEN: 'xxx'
+    TEMPLATE_ID_SEND_INVITATION: 'xxx'
 staging:
   env_vars:
     POSTMAN_SERVER_TOKEN: 'xxx'
+    TEMPLATE_ID_SEND_INVITATION: 'xxx'
 production:
   env_vars:
     POSTMAN_SERVER_TOKEN: 'xxx'
+    TEMPLATE_ID_SEND_INVITATION: 'xxx'
