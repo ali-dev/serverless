@@ -1,0 +1,9 @@
+dev:
+  env_vars:
+    POSTMAN_SERVER_TOKEN: 'xxx'
+staging:
+  env_vars:
+    POSTMAN_SERVER_TOKEN: 'xxx'
+production:
+  env_vars:
+    POSTMAN_SERVER_TOKEN: 'xxx'

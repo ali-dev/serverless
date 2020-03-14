@@ -3,29 +3,21 @@
 const postmark = require("postmark")
 
 const sendInvitation = (event, context, callback) => {
-  let data = event.body;
-  if (typeof event.body == "string") {
-    console.log(data);
-    data = JSON.parse(data);
-  } else {
-    data = event.body;
-  }
+  console.log(`EVENT IS: ${JSON.stringify(event)}`);
+  const data = JSON.parse(event.arguments.data);
 
 
   const serverToken = process.env.POSTMAN_SERVER_TOKEN; //"xxxx-xxxxx-xxxx-xxxxx-xxxxxx";
   const client = new postmark.ServerClient(serverToken);
-
   
-  
-  console.log(data["hostName"]);
+  console.log(data);
+  console.log(`TOKEN: ${serverToken}`);
   
   (async () => {
     // trigger email here
-    client.sendEmail({
+    client.sendEmailWithTemplate({
       "From": "ali@causeandcuisine.com", //@todo determine if it is best practice to add the sender's email 
-      "To": data.guestEmail,
-      "Subject": "Test",
-      "TextBody": "Hello from Postmark!",
+      "To": "ali@causeandcuisine.com", //@todo: change to data.guestEmail, after we start paying - `While your account is pending approval, all recipient addresses must share the same domain as the 'From' address.`
       "TemplateId": "16783368",
       "TemplateModel": {
         "name": data.guestName,
@@ -34,11 +26,7 @@ const sendInvitation = (event, context, callback) => {
         "cause_and_cuisine_url": "https://staging.causeandcuisine.com", // @todo use env. variable to determine domain
         "event_url": `https://staging.causeandcuisine.com/rsvp/${data.eventId}/${data.guestId}`
       }
-    }).then(response => {
-      console.log("API called successfully. Returned data: " + JSON.stringify(response));
-    }).error(err => {
-      console.error(error);
-    });
+    })
     
   })();
   return callback(null, {

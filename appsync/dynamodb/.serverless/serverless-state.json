@@ -262,7 +262,7 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1615264417
+              "Expires": 1615750479
             }
           },
           "GraphQlSchema": {
@@ -443,7 +443,7 @@
               "Type": "AWS_LAMBDA",
               "ServiceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole",
               "LambdaConfig": {
-                "LambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvition"
+                "LambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvitation"
               }
             }
           },
@@ -987,7 +987,7 @@
             "name": "Email_Send_Invitation_Lambda",
             "description": "Send Invitation Lambda DataSource",
             "config": {
-              "lambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvition",
+              "lambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvitation",
               "serviceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole"
             }
           },
@@ -1241,7 +1241,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1583728417798-2020-03-09T04:33:37.798Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1584214479409-2020-03-14T19:34:39.409Z",
     "artifact": ""
   }
 }

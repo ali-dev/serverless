@@ -230,7 +230,7 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1615264417
+        "Expires": 1615750479
       }
     },
     "GraphQlSchema": {
@@ -411,7 +411,7 @@
         "Type": "AWS_LAMBDA",
         "ServiceRoleArn": "arn:aws:iam::395974092468:role/Lambda-AppSyncServiceRole",
         "LambdaConfig": {
-          "LambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvition"
+          "LambdaFunctionArn": "arn:aws:lambda:us-east-1:395974092468:function:email-dev-sendInvitation"
         }
       }
     },
