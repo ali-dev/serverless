@@ -8,9 +8,25 @@ const invitationValidation = function(data) {
     isValid: true,
     message: null
   }
+  
+  // @todo maybe figure out a smarter way to validate
   if (!data.eventDate) {
     validation.isValid = false;
     validation.message = 'Event Date is not specified';
+  }
+  if (!data.hostName) {  
+    validation.message = 'Host Name is not specified';
+  }
+  if (!data.eventId) {  
+    validation.message = 'EventId is not specified';
+  }
+
+  if (!data.eventName) {  
+    validation.message = 'EventName is not specified';
+  }
+
+  if (validation.message !== null) {
+    validation.isValid = false;
   }
   return validation;
 }
@@ -23,15 +39,15 @@ const sendInvitation = (event, context, callback) => {
   
   // let errorMessage = null;
   // const invitationValidation = invitationValidation(data);
-  
-  if (!data.eventDate) {
+  const validation = invitationValidation(data);
+  if (validation.isValid === false) {
     return callback(null, {
       statusCode: 400,
       headers: {
         "Access-Control-Allow-Origin": "*", // Required for CORS support to work
         "Access-Control-Allow-Credentials": true // Required for cookies, authorization headers with HTTPS
       },
-      body: JSON.stringify({ error: "true", "message":  'Event date not specified'})
+      body: JSON.stringify({ success: "false", "message":  validation.message})
     });
     
   }
