@@ -1,0 +1,68 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: email # NOTE: update this with your service name
+#app: your-app-name
+#tenant: your-tenant-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  vars: ${file(./sls-config.yml)}
+provider:
+  name: aws
+  runtime: nodejs10.x
+  profile: personal
+  stage: ${opt:stage, 'dev'}
+  environment:
+    POSTMAN_SERVER_TOKEN: ${self:custom.vars.${self:custom.stage}.env_vars.POSTMAN_SERVER_TOKEN}
+    TEMPLATE_ID_SEND_INVITATION: ${self:custom.vars.${self:custom.stage}.env_vars.TEMPLATE_ID_SEND_INVITATION}
+    
+functions:
+  sendEventCreatedEmail:
+    handler: sendinblue.sendEventCreatedEmail
+    stage: dev
+    memorySize: 128
+    description: Email triggered when user creates an event.
+    events:
+      - http: 
+          path: email/eventCreated
+          method: post
+  sendInvitation:
+    handler: email.sendInvitation
+    stage: dev
+    memorySize: 128
+    description: Email triggered when a host invites a guest.
+    events:
+      - http: 
+          path: email/sendInvitation
+          method: post
+    
+          
+
+Resources:
+  IamRoleLambdaExecution:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement: 
+          - Effect: Allow
+            Principal: 
+              Service:
+                - lambda.amazonaws.com
+                # - edgelambda.amazonaws.com
+
+plugins:
+  - serverless-offline
