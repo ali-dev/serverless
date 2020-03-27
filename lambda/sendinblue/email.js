@@ -67,7 +67,7 @@ const sendInvitation = (event, context, callback) => {
         "event_name": data.eventName,
         "host_name": data.hostName,
         "cause_and_cuisine_url": "https://staging.causeandcuisine.com", // @todo use env. variable to determine domain
-        "event_url": `https://staging.causeandcuisine.com/rsvp/${data.eventId}/${data.guestId}`
+        "event_url": `https://staging.causeandcuisine.com/rsvp/${data.viewId}/${data.guestId}`
       }
     })
     
