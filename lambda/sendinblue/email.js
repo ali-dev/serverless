@@ -17,8 +17,8 @@ const invitationValidation = function(data) {
   if (!data.hostName) {  
     validation.message = 'Host Name is not specified';
   }
-  if (!data.eventId) {  
-    validation.message = 'EventId is not specified';
+  if (!data.viewId) {  
+    validation.message = 'viewId is not specified';
   }
 
   if (!data.eventName) {  
