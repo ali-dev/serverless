@@ -33,8 +33,6 @@ module.exports.createCharge = async (event, context, callback) => {
 		const guestId = data.arguments.guestId;
 		
 		if (guests[guestId]) {
-			console.log(`update guest ${guestId}`);
-
 			const params = {
 				TableName: 'dev-event',
 				Key: { "id": data.arguments.eventId },
@@ -45,8 +43,15 @@ module.exports.createCharge = async (event, context, callback) => {
 				  ':one' : 1,
 				}
 			  };
-			const updatedEvent =  await documentClient.update(params).promise();
-			console.log(updatedEvent);
+			await documentClient.update(params).promise();
+			// @todo send email notification to eventHost 
+			// @todo send confirmation to guest  
+		} else {
+			return {
+				statusCode: 400,
+				error: `Could not RSVP to event ${event.eventName}`,
+				body: JSON.stringify({success:'false'})
+			}
 		}
 	} catch(error) {
 		console.log(`ERROR: ${error}`);
