@@ -1,12 +1,63 @@
 'use strict';
 
 const stripe = require('stripe')('sk_test_9O0fNrOk3IZwt05uCZMAkgRd00ZiywEHGO'); 
+const AWS = require('aws-sdk');
+AWS.config.update({region: 'us-east-1'});
+const AWS_DEPLOY_REGION = 'us-east-1';
 
-module.exports.createCharge = (event, context, callback) => {
-  
-	let data = {};
-    data = event.token;
-    console.log(data);
+
+module.exports.createCharge = async (event, context, callback) => {	
+	const data = event;
+	
+	const documentClient = new AWS.DynamoDB.DocumentClient(
+		{
+			api_version: '2012-08-10',
+			region: AWS_DEPLOY_REGION
+		}
+	);
+	console.log(`eventId is ${data.arguments.eventId}`);
+	const eventFetchParams = {
+		Key: {
+		 "id": data.arguments.eventId
+		}, 
+		TableName: 'dev-event'
+	};
+	
+	
+
+	try {
+		
+		const eventObject = await documentClient.get(eventFetchParams).promise();
+		const event = eventObject.Item; 
+		const guests = event.guests;
+		const guestId = data.arguments.guestId;
+		
+		if (guests[guestId]) {
+			console.log(`update guest ${guestId}`);
+
+			const params = {
+				TableName: 'dev-event',
+				Key: { "id": data.arguments.eventId },
+				UpdateExpression: 'SET guests.#guest_id = :guestDetails ADD version :one',
+				ExpressionAttributeNames: {'#guest_id' : guestId},
+				ExpressionAttributeValues: {
+				  ':guestDetails' : JSON.parse(data.arguments.guest),
+				  ':one' : 1,
+				}
+			  };
+			const updatedEvent =  await documentClient.update(params).promise();
+			console.log(updatedEvent);
+		}
+	} catch(error) {
+		console.log(`ERROR: ${error}`);
+		return {
+			statusCode: 400,
+			error: 'Could not retrieve event',
+			body: JSON.stringify({success:'false'})
+		}
+	}
+	
+    console.log(data.arguments.token);
 	(async () => {
 	  const session = await stripe.checkout.sessions.create({
 	    payment_method_types: ['card'],

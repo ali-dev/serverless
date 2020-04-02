@@ -25,14 +25,15 @@ provider:
   profile: personal
   environment:
     STRIPE_KEY: "@todo"
-  # iamRoleStatements:
-  #   - Effect: Allow
-  #     Action:
-  #       - dynamodb:Query
-  #       - dynamodb:Scan
-  #       - dynamodb:GetItem
-  #       - dynamodb:PutItem
-  #     Resource: "*"  
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource: "*"  
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1

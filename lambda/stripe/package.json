@@ -4,6 +4,7 @@
   "description": "",
   "main": "stripe.js",
   "dependencies": {
+    "aws-sdk": "^2.649.0",
     "stripe": "^7.10.0"
   },
   "devDependencies": {
