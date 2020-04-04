@@ -9,6 +9,8 @@ const AWS_DEPLOY_REGION = 'us-east-1';
 module.exports.createCharge = async (event, context, callback) => {	
 	const data = event;
 	
+
+	const {guest, guestId, eventId, amount, willDonate } = data.arguments;
 	const documentClient = new AWS.DynamoDB.DocumentClient(
 		{
 			api_version: '2012-08-10',
@@ -30,16 +32,15 @@ module.exports.createCharge = async (event, context, callback) => {
 		const eventObject = await documentClient.get(eventFetchParams).promise();
 		const event = eventObject.Item; 
 		const guests = event.guests;
-		const guestId = data.arguments.guestId;
 		
 		if (guests[guestId]) {
 			const params = {
 				TableName: 'dev-event',
-				Key: { "id": data.arguments.eventId },
+				Key: { "id": eventId },
 				UpdateExpression: 'SET guests.#guest_id = :guestDetails ADD version :one',
 				ExpressionAttributeNames: {'#guest_id' : guestId},
 				ExpressionAttributeValues: {
-				  ':guestDetails' : JSON.parse(data.arguments.guest),
+				  ':guestDetails' : JSON.parse(guest),
 				  ':one' : 1,
 				}
 			  };
@@ -62,29 +63,29 @@ module.exports.createCharge = async (event, context, callback) => {
 		}
 	}
 	
-    console.log(data.arguments.token);
-	(async () => {
-	  const session = await stripe.checkout.sessions.create({
-	    payment_method_types: ['card'],
-	    line_items: [{
-	      name: 'T-shirt',
-	      description: 'Comfortable cotton t-shirt',
-	      images: ['https://example.com/t-shirt.png'],
-	      amount: 500,
-	      currency: 'usd',
-	      quantity: 1,
-	    }],
-	    success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
-	    cancel_url: 'https://example.com/cancel',
-	  });
-	})();
-  	return callback(null, {
-	        statusCode: 200,
-	        headers: {
-	          "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
-	          "Access-Control-Allow-Credentials" : true // Required for cookies, authorization headers with HTTPS
-	        },
-	        body: JSON.stringify({success:'true'})
-        });
+	const response = {
+		statusCode: 200,
+		headers: {
+		"Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+		"Access-Control-Allow-Credentials" : true // Required for cookies, authorization headers with HTTPS
+		},
+		body: JSON.stringify({success:'true'})
+	}
+	if (willDonate) {
+		const paymentIntent = await stripe.paymentIntents.create({
+			amount: amount*100, // in cents
+			currency: 'usd',
+			// Verify your integration in this guide by including this parameter
+			payment_method_types: ['card'],
+			metadata: {
+				eventId: event.id,
+				causeId: event.causeId,
+				guestId: guestId
+			},
+		});
+		response.body = JSON.stringify({success:'true', paymentIntent: paymentIntent});
+	} 
+
+	return response;
 
 };
