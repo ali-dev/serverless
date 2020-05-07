@@ -1,0 +1,12 @@
+dev:
+  env_vars:
+    ZOOM_USER_ID: '...'
+    ZOOM_ACCESS_TOKEN: '...'
+staging: 
+  env_vars:
+    ZOOM_USER_ID: '...'
+    ZOOM_ACCESS_TOKEN: '...'
+production:
+  env_vars:
+    ZOOM_USER_ID: '...'
+    ZOOM_ACCESS_TOKEN: '...'

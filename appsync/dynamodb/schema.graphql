@@ -50,6 +50,23 @@ type Mutation {
 		rsvpId: String!, 
 		guests: AWSJSON
 	): Event!
+	createVirtualEvent(
+		eventName: String!, 
+		cause: String!, 
+		organizationId: String!, 
+		hostName: String!, 
+		hostEmail: String!, 
+		location: String!, 
+		recommendedDonation: Int, 
+		date: String!, 
+		time: String!,
+		endTime: String,
+		eventDetails: String!,
+		viewId: String!, 
+		editId: String!, 
+		rsvpId: String!, 
+		guests: AWSJSON
+	): AWSJSON!
 	addGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON
 	removeGuest(guestId: String!, eventId: String!): AWSJSON
 	addCharge(eventId: String!, guestId: String!, guest: String!, causeId: String!, amount: Int, willDonate: Boolean!): StripeCharge!

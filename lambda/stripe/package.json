@@ -5,7 +5,11 @@
   "main": "stripe.js",
   "dependencies": {
     "aws-sdk": "^2.649.0",
-    "stripe": "^7.10.0"
+    "jsonwebtoken": "^8.3.0",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2",
+    "stripe": "^7.10.0",
+    "uuid": "^8.0.0"
   },
   "devDependencies": {
     "aws-cli": "0.0.2"

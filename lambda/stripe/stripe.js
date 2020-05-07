@@ -1,6 +1,6 @@
 'use strict';
 
-const stripe = require('stripe')('sk_test_9O0fNrOk3IZwt05uCZMAkgRd00ZiywEHGO'); 
+const stripe = require('stripe')(process.env.STRIPE_API_KEY); 
 const AWS = require('aws-sdk');
 AWS.config.update({region: 'us-east-1'});
 const AWS_DEPLOY_REGION = 'us-east-1';
