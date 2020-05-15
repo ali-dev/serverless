@@ -250,8 +250,17 @@
             "Type": "AWS::AppSync::GraphQLApi",
             "Properties": {
               "Name": "dynamodbDemo",
-              "AuthenticationType": "API_KEY",
-              "AdditionalAuthenticationProviders": []
+              "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "AdditionalAuthenticationProviders": [
+                {
+                  "AuthenticationType": "API_KEY"
+                }
+              ],
+              "UserPoolConfig": {
+                "AwsRegion": "us-east-1",
+                "UserPoolId": "us-east-1_Zy97gNB6Y",
+                "DefaultAction": "ALLOW"
+              }
             }
           },
           "GraphQlApiKeyDefault": {
@@ -264,7 +273,7 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1621082597
+              "Expires": 1621087538
             }
           },
           "GraphQlSchema": {
@@ -884,6 +893,23 @@
     "custom": {
       "accountId": 395974092468,
       "stage": "dev",
+      "vars": {
+        "dev": {
+          "env_vars": {
+            "USER_POOL_ID": "us-east-1_Zy97gNB6Y"
+          }
+        },
+        "staging": {
+          "env_vars": {
+            "USER_POOL_ID": "us-east-1_Zy97gNB6Y"
+          }
+        },
+        "production": {
+          "env_vars": {
+            "USER_POOL_ID": "us-east-1_Zy97gNB6Y"
+          }
+        }
+      },
       "tableThroughputs": {
         "prod": 5,
         "default": 3
@@ -925,7 +951,17 @@
       ],
       "appSync": {
         "name": "dynamodbDemo",
-        "authenticationType": "API_KEY",
+        "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+        "userPoolConfig": {
+          "awsRegion": "us-east-1",
+          "defaultAction": "ALLOW",
+          "userPoolId": "us-east-1_Zy97gNB6Y"
+        },
+        "additionalAuthenticationProviders": [
+          {
+            "authenticationType": "API_KEY"
+          }
+        ],
         "serviceRole": "AppSyncServiceRole",
         "mappingTemplates": [
           {
@@ -1301,7 +1337,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1589546597143-2020-05-15T12:43:17.143Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1589551538150-2020-05-15T14:05:38.150Z",
     "artifact": ""
   }
 }

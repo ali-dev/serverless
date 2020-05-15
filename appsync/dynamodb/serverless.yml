@@ -29,6 +29,7 @@ plugins:
 custom:
   accountId: 395974092468
   stage: ${opt:stage, self:provider.stage}
+  vars: ${file(./sls-config.yml)}
   tableThroughputs:
     prod: 5
     default: 3
@@ -58,13 +59,17 @@ custom:
 
   appSync:
     name: dynamodbDemo # defaults to api
-    authenticationType: API_KEY # AMAZON_COGNITO_USER_POOLS is also supported
-    # userPoolConfig: @todo look into adding userPool config for authenticated users?
-    #   awsRegion: us-east-1 # required # region
-    #   defaultAction: ALLOW
-    #   userPoolId: {Ref: CognitoUserPoolUsers}
+    authenticationType: AMAZON_COGNITO_USER_POOLS # AMAZON_COGNITO_USER_POOLS is also supported
     # region: # defaults to provider region
     # mappingTemplatesLocation: # defaults to mapping-templates
+    userPoolConfig:
+      awsRegion: us-east-1
+      defaultAction: ALLOW
+      userPoolId: ${self:custom.vars.${self:custom.stage}.env_vars.USER_POOL_ID}
+
+    additionalAuthenticationProviders: 
+      - authenticationType: API_KEY
+          
     serviceRole: "AppSyncServiceRole"
     mappingTemplates:
       - dataSource: Organizations
@@ -263,7 +268,7 @@ provider:
     ORGANIZATION_TABLE: "${self:custom.stage}-organization"
     CAUSE_TABLE: "${self:custom.stage}-cause"
     EVENT_TABLE: "${self:custom.stage}-event"
-
+  
   iamRoleStatements:
     - Effect: Allow
       Action:
