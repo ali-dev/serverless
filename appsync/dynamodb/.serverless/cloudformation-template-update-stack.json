@@ -16,21 +16,21 @@
         }
       }
     },
-    "CognitoUserPoolUsers": {
+    "CognitoUserPoolCCPool": {
       "Type": "AWS::Cognito::UserPool",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "UserPoolName": "DineUserPool",
+        "UserPoolName": "CCPool-dev",
         "AutoVerifiedAttributes": [
           "email"
         ],
         "Policies": {
           "PasswordPolicy": {
             "MinimumLength": 8,
-            "RequireLowercase": true,
-            "RequireNumbers": true,
+            "RequireLowercase": false,
+            "RequireNumbers": false,
             "RequireSymbols": false,
-            "RequireUppercase": true
+            "RequireUppercase": false
           }
         },
         "UsernameAttributes": [
@@ -45,7 +45,7 @@
         "GenerateSecret": false,
         "RefreshTokenValidity": 30,
         "UserPoolId": {
-          "Ref": "CognitoUserPoolUsers"
+          "Ref": "CognitoUserPoolCCPool"
         }
       }
     },
@@ -232,7 +232,7 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1620032137
+        "Expires": 1621082597
       }
     },
     "GraphQlSchema": {

@@ -279,20 +279,20 @@ provider:
 
 resources:
   Resources:
-    CognitoUserPoolUsers:
+    CognitoUserPoolCCPool:
       Type: AWS::Cognito::UserPool
       DeletionPolicy: Retain
       Properties:
-        UserPoolName: DineUserPool
+        UserPoolName: CCPool-${self:custom.stage}
         AutoVerifiedAttributes:
           - email
         Policies:
           PasswordPolicy:
             MinimumLength: 8
-            RequireLowercase: true
-            RequireNumbers: true
+            RequireLowercase: false
+            RequireNumbers: false
             RequireSymbols: false
-            RequireUppercase: true
+            RequireUppercase: false
         UsernameAttributes:
           - email
     WebUserPoolClient:
@@ -301,7 +301,7 @@ resources:
           ClientName: "Web"
           GenerateSecret: false
           RefreshTokenValidity: 30
-          UserPoolId: {Ref: CognitoUserPoolUsers}
+          UserPoolId: {Ref: CognitoUserPoolCCPool}
     AppSyncServiceRole:
       Type: "AWS::IAM::Role"
       Properties:
