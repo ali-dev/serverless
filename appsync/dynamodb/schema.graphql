@@ -1,4 +1,4 @@
-type Cause {
+type Cause @aws_api_key {
 	id: String!
 	causeName: String!
 	organizationId: String!
@@ -8,7 +8,7 @@ type Cause {
 	country: String!
 }
 
-type Causes {
+type Causes @aws_api_key {
 	causes: [Cause!]
 }
 
@@ -81,6 +81,7 @@ type Query {
 	getOrganizationInfo(name: String!): Organization!
 	getCauseInfo(id: String!, organizationId: String!): Cause
 	getAllCauses: Causes!
+	@aws_api_key
 	getEventForView(viewId: String!): Event!
 	getEventForEdit(editId: String!): Event!
 }
