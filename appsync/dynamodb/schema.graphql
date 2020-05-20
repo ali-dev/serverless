@@ -66,7 +66,8 @@ type Mutation {
 		editId: String!, 
 		rsvpId: String!, 
 		guests: AWSJSON
-	): AWSJSON!
+	): AWSJSON
+	@aws_cognito_user_pools
 	addGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON
 	removeGuest(guestId: String!, eventId: String!): AWSJSON
 	addCharge(eventId: String!, guestId: String!, guest: String!, causeId: String!, amount: Int, willDonate: Boolean!): StripeCharge!
