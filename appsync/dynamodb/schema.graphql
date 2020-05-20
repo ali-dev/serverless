@@ -50,6 +50,7 @@ type Mutation {
 		rsvpId: String!, 
 		guests: AWSJSON
 	): Event!
+	@aws_cognito_user_pools
 	createVirtualEvent(
 		eventName: String!, 
 		cause: String!, 
@@ -69,9 +70,12 @@ type Mutation {
 	): AWSJSON
 	@aws_cognito_user_pools
 	addGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON
+	@aws_cognito_user_pools
 	removeGuest(guestId: String!, eventId: String!): AWSJSON
+	@aws_cognito_user_pools
 	addCharge(eventId: String!, guestId: String!, guest: String!, causeId: String!, amount: Int, willDonate: Boolean!): StripeCharge!
 	sendInvitation(data: String!): AWSJSON!
+	@aws_cognito_user_pools
 }
 
 type Organization {
@@ -80,11 +84,13 @@ type Organization {
 
 type Query {
 	getOrganizationInfo(name: String!): Organization!
+	@aws_api_key
 	getCauseInfo(id: String!, organizationId: String!): Cause
 	getAllCauses: Causes!
 	@aws_api_key
 	getEventForView(viewId: String!): Event!
 	getEventForEdit(editId: String!): Event!
+	@aws_cognito_user_pools
 }
 
 type StripeCharge {
