@@ -74,6 +74,7 @@ type Mutation {
 	removeGuest(guestId: String!, eventId: String!): AWSJSON
 	@aws_cognito_user_pools
 	addCharge(eventId: String!, guestId: String!, guest: String!, causeId: String!, amount: Int, willDonate: Boolean!): StripeCharge!
+	@aws_api_key
 	sendInvitation(data: String!): AWSJSON!
 	@aws_cognito_user_pools
 }
@@ -86,9 +87,11 @@ type Query {
 	getOrganizationInfo(name: String!): Organization!
 	@aws_api_key
 	getCauseInfo(id: String!, organizationId: String!): Cause
+	@aws_api_key
 	getAllCauses: Causes!
 	@aws_api_key
 	getEventForView(viewId: String!): Event!
+	@aws_api_key
 	getEventForEdit(editId: String!): Event!
 	@aws_cognito_user_pools
 }
