@@ -273,7 +273,7 @@
                 ]
               },
               "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-              "Expires": 1621669263
+              "Expires": 1621700643
             }
           },
           "GraphQlSchema": {
@@ -740,7 +740,7 @@
               "TypeName": "Query",
               "FieldName": "getEventForEdit",
               "RequestMappingTemplate": "## Below example shows an equality query to find an item by GraphQL input argument of \"id\"\n## Queries can be run against a table or an index, which can be more performant than a Scan operation\n##   If using an index you will also provide an \"index\" : \"indexname\" where indexname is the name of your index\n## \"expression\" is the logical EQUALITY condition that will be evaluated\n## \"espressionValues\" is the attribute in DynamoDB that you're evaluating the \"expression\" condition against\n## You can optionally provide \"filter\" that will filter the results returned from a query\n## Read more: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html#aws-appsync-resolver-mapping-template-reference-dynamodb-query\n\n{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Query\",\n    \"index\" : \"editIdss-index\",\n    \"query\" : {\n        ## Provide a query expression. **\n        \"expression\": \"editId = :editId\",\n        \"expressionValues\" : {\n            \":editId\" : $util.dynamodb.toDynamoDBJson($ctx.args.editId)\n        }\n    }\n}",
-              "ResponseMappingTemplate": "#if ($ctx.result.items.size() > 0)\n  $util.toJson($ctx.result.items[0])\n#else\n  null\n#end",
+              "ResponseMappingTemplate": "#if ($ctx.result.items.size() > 0)\n  #if($context.result.items[0][\"userId\"] == $context.identity.username)\n    $util.toJson($ctx.result.items[0])\n  #else\n    $utils.unauthorized()\n  #end    \n#else\n  null\n#end",
               "DataSourceName": {
                 "Fn::GetAtt": [
                   "GraphQlDsEvents",
@@ -805,7 +805,7 @@
               },
               "TypeName": "Mutation",
               "FieldName": "createVirtualEvent",
-              "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"createVirtualEvent\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        \"identity\":  \"$context.identity.username)\" \n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
+              "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"createVirtualEvent\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        \"identity\":  \"$context.identity.username\" \n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
               "ResponseMappingTemplate": "$util.toJson($ctx.result)",
               "DataSourceName": {
                 "Fn::GetAtt": [
@@ -1337,7 +1337,7 @@
     "layers": {}
   },
   "package": {
-    "artifactDirectoryName": "serverless/dynamodb/dev/1590133263750-2020-05-22T07:41:03.750Z",
+    "artifactDirectoryName": "serverless/dynamodb/dev/1590164643819-2020-05-22T16:24:03.819Z",
     "artifact": ""
   }
 }
