@@ -9,6 +9,7 @@ will be passed as the event to AWS Lambda.
   "payload": {
         "field": "createVirtualEvent",
         "arguments":  $utils.toJson($context.arguments),
+        "identity":  "$context.identity.username)" 
         ## "handle" : $utils.toJson($context.identity.username)
     }
 }

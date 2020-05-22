@@ -241,7 +241,7 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1621484919
+        "Expires": 1621669263
       }
     },
     "GraphQlSchema": {
@@ -773,7 +773,7 @@
         },
         "TypeName": "Mutation",
         "FieldName": "createVirtualEvent",
-        "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"createVirtualEvent\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
+        "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"createVirtualEvent\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        \"identity\":  \"$context.identity.username)\" \n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)",
         "DataSourceName": {
           "Fn::GetAtt": [

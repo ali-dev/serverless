@@ -97,8 +97,10 @@ module.exports.createVirtualEvent = (event, context, callback) => {
 		rp(options)
 		.then(function (response) {
 			//logic for your response
-			console.log("User has", response);
+			// console.log("User has", response);
 			let dynamoData = {...data.arguments};
+			
+			dynamoData.userId = data.identity;
 			dynamoData.id = uuid.v4(); 
 			dynamoData.zoomLink = response.join_url; 
 			
@@ -106,7 +108,7 @@ module.exports.createVirtualEvent = (event, context, callback) => {
 				Item: dynamoData, 
 				TableName: 'dev-event'
 			};
-			console.log(eventCreateParams);
+			// console.log(eventCreateParams);
 			
 			documentClient.put(eventCreateParams, function(error, data) {
 				if (error) {
