@@ -1,0 +1,56 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+# @TODO: include configurations from sls-config 
+
+service: internal # NOTE: update this with your service name
+#app: your-app-name
+#tenant: your-tenant-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  # vars: ${file(./sls-config.yml)}
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  profile: personal
+  # environment:
+    # STRIPE_API_KEY: ${self:custom.vars.${self:custom.stage}.env_vars.STRIPE_API_KEY}
+
+functions:
+  confirmPreSignup:
+    handler: cognito.confirmPreSignup
+    stage: ${self:custom.stage}
+    memorySize: 128
+    description: Confirms user before signing up.
+    events:
+      - http: 
+          path: cognito/confirmUser
+          method: get
+
+Resources:
+  IamRoleLambdaExecution:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement: 
+          - Effect: Allow
+            Principal: 
+              Service:
+                - lambda.amazonaws.com
+                # - edgelambda.amazonaws.com

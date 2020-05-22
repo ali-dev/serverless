@@ -1,5 +1,9 @@
 #if ($ctx.result.items.size() > 0)
-  $util.toJson($ctx.result.items[0])
+  #if($context.result.items[0]["userId"] == $context.identity.username)
+    $util.toJson($ctx.result.items[0])
+  #else
+    $utils.unauthorized()
+  #end    
 #else
   null
 #end

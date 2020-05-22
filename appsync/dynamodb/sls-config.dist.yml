@@ -1,0 +1,9 @@
+dev:
+  env_vars:
+    USER_POOL_ID: 'xxx'
+staging:
+  env_vars:
+    USER_POOL_ID: 'xxx'
+production:
+  env_vars:
+    USER_POOL_ID: 'xxx'

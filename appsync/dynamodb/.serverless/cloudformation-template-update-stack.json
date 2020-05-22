@@ -16,21 +16,21 @@
         }
       }
     },
-    "CognitoUserPoolUsers": {
+    "CognitoUserPoolCCPool": {
       "Type": "AWS::Cognito::UserPool",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "UserPoolName": "DineUserPool",
+        "UserPoolName": "CCPool-dev",
         "AutoVerifiedAttributes": [
           "email"
         ],
         "Policies": {
           "PasswordPolicy": {
             "MinimumLength": 8,
-            "RequireLowercase": true,
-            "RequireNumbers": true,
+            "RequireLowercase": false,
+            "RequireNumbers": false,
             "RequireSymbols": false,
-            "RequireUppercase": true
+            "RequireUppercase": false
           }
         },
         "UsernameAttributes": [
@@ -45,7 +45,7 @@
         "GenerateSecret": false,
         "RefreshTokenValidity": 30,
         "UserPoolId": {
-          "Ref": "CognitoUserPoolUsers"
+          "Ref": "CognitoUserPoolCCPool"
         }
       }
     },
@@ -218,8 +218,17 @@
       "Type": "AWS::AppSync::GraphQLApi",
       "Properties": {
         "Name": "dynamodbDemo",
-        "AuthenticationType": "API_KEY",
-        "AdditionalAuthenticationProviders": []
+        "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
+        "AdditionalAuthenticationProviders": [
+          {
+            "AuthenticationType": "API_KEY"
+          }
+        ],
+        "UserPoolConfig": {
+          "AwsRegion": "us-east-1",
+          "UserPoolId": "us-east-1_Zy97gNB6Y",
+          "DefaultAction": "ALLOW"
+        }
       }
     },
     "GraphQlApiKeyDefault": {
@@ -232,13 +241,13 @@
           ]
         },
         "Description": "serverless-appsync-plugin: AppSync API Key for GraphQlApiKeyDefault",
-        "Expires": 1620032137
+        "Expires": 1621700643
       }
     },
     "GraphQlSchema": {
       "Type": "AWS::AppSync::GraphQLSchema",
       "Properties": {
-        "Definition": "type Cause {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tendTime: String,\n\teventDetails: String!,\n\trecommendedDonation: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): Event!\n\tcreateVirtualEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): AWSJSON!\n\taddGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON\n\tremoveGuest(guestId: String!, eventId: String!): AWSJSON\n\taddCharge(eventId: String!, guestId: String!, guest: String!, causeId: String!, amount: Int, willDonate: Boolean!): StripeCharge!\n\tsendInvitation(data: String!): AWSJSON!\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\tgetAllCauses: Causes!\n\tgetEventForView(viewId: String!): Event!\n\tgetEventForEdit(editId: String!): Event!\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
+        "Definition": "type Cause @aws_api_key {\n\tid: String!\n\tcauseName: String!\n\torganizationId: String!\n\torganizationName: String!\n\tdetails: String!\n\timage: String\n\tcountry: String!\n}\n\ntype Causes @aws_api_key {\n\tcauses: [Cause!]\n}\n\ntype Event {\n\tid: String!\n\teventName: String!,\n\tcause: String!,\n\torganizationId: String!,\n\tcauseDetails: AWSJSON,\n\thostName: String!,\n\thostEmail: String!,\n\tlocation: String!,\n\tdate: String!,\n\ttime: String!,\n\tendTime: String,\n\teventDetails: String!,\n\trecommendedDonation: Int,\n\tviewId: String!,\n\trsvpId: String!,\n\teditId: String!,\n\tguests: AWSJSON\n}\n\ntype Mutation {\n\taddEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): Event!\n\t@aws_cognito_user_pools\n\tcreateVirtualEvent(\n\t\teventName: String!, \n\t\tcause: String!, \n\t\torganizationId: String!, \n\t\thostName: String!, \n\t\thostEmail: String!, \n\t\tlocation: String!, \n\t\trecommendedDonation: Int, \n\t\tdate: String!, \n\t\ttime: String!,\n\t\tendTime: String,\n\t\teventDetails: String!,\n\t\tviewId: String!, \n\t\teditId: String!, \n\t\trsvpId: String!, \n\t\tguests: AWSJSON\n\t): AWSJSON\n\t@aws_cognito_user_pools\n\taddGuest(guestId: String!, eventId: String!, guestDetails: AWSJSON!): AWSJSON\n\t@aws_cognito_user_pools\n\tremoveGuest(guestId: String!, eventId: String!): AWSJSON\n\t@aws_cognito_user_pools\n\taddCharge(eventId: String!, guestId: String!, guest: String!, causeId: String!, amount: Int, willDonate: Boolean!): StripeCharge!\n\t@aws_api_key\n\tsendInvitation(data: String!): AWSJSON!\n\t@aws_cognito_user_pools\n}\n\ntype Organization {\n\tname: String!\n}\n\ntype Query {\n\tgetOrganizationInfo(name: String!): Organization!\n\t@aws_api_key\n\tgetCauseInfo(id: String!, organizationId: String!): Cause\n\t@aws_api_key\n\tgetAllCauses: Causes!\n\t@aws_api_key\n\tgetEventForView(viewId: String!): Event!\n\t@aws_api_key\n\tgetEventForEdit(editId: String!): Event!\n\t@aws_cognito_user_pools\n}\n\ntype StripeCharge {\n\tbody: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}",
         "ApiId": {
           "Fn::GetAtt": [
             "GraphQlApi",
@@ -699,7 +708,7 @@
         "TypeName": "Query",
         "FieldName": "getEventForEdit",
         "RequestMappingTemplate": "## Below example shows an equality query to find an item by GraphQL input argument of \"id\"\n## Queries can be run against a table or an index, which can be more performant than a Scan operation\n##   If using an index you will also provide an \"index\" : \"indexname\" where indexname is the name of your index\n## \"expression\" is the logical EQUALITY condition that will be evaluated\n## \"espressionValues\" is the attribute in DynamoDB that you're evaluating the \"expression\" condition against\n## You can optionally provide \"filter\" that will filter the results returned from a query\n## Read more: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-dynamodb.html#aws-appsync-resolver-mapping-template-reference-dynamodb-query\n\n{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Query\",\n    \"index\" : \"editIdss-index\",\n    \"query\" : {\n        ## Provide a query expression. **\n        \"expression\": \"editId = :editId\",\n        \"expressionValues\" : {\n            \":editId\" : $util.dynamodb.toDynamoDBJson($ctx.args.editId)\n        }\n    }\n}",
-        "ResponseMappingTemplate": "#if ($ctx.result.items.size() > 0)\n  $util.toJson($ctx.result.items[0])\n#else\n  null\n#end",
+        "ResponseMappingTemplate": "#if ($ctx.result.items.size() > 0)\n  #if($context.result.items[0][\"userId\"] == $context.identity.username)\n    $util.toJson($ctx.result.items[0])\n  #else\n    $utils.unauthorized()\n  #end    \n#else\n  null\n#end",
         "DataSourceName": {
           "Fn::GetAtt": [
             "GraphQlDsEvents",
@@ -764,7 +773,7 @@
         },
         "TypeName": "Mutation",
         "FieldName": "createVirtualEvent",
-        "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"createVirtualEvent\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
+        "RequestMappingTemplate": "#**\nThe value of 'payload' after the template has been evaluated\nwill be passed as the event to AWS Lambda.\n*#\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  ## \"payload\": $util.toJson($context.args)\n  \"payload\": {\n        \"field\": \"createVirtualEvent\",\n        \"arguments\":  $utils.toJson($context.arguments),\n        \"identity\":  \"$context.identity.username\" \n        ## \"handle\" : $utils.toJson($context.identity.username)\n    }\n}",
         "ResponseMappingTemplate": "$util.toJson($ctx.result)",
         "DataSourceName": {
           "Fn::GetAtt": [
